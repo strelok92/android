@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">compass</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="want_clear">Do you want clear all azimuth?</string>
+    <string name="want_calib">Do you want start compass calibration?</string>
+    <string name="bCalib">Calibration</string>
+    <string name="bAlarm">Alarm</string>
+    <string name="bAzimuth">Azimuth</string>
+    <string name="bClear">Clear</string>
 </resources>
