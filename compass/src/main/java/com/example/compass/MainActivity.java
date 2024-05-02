@@ -4,17 +4,18 @@ import static android.app.PendingIntent.getActivity;
 import static java.lang.Math.PI;
 import static java.lang.Math.sqrt;
 
-import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Canvas;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.Log;
+import android.util.Xml;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,11 +23,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Sensor compass;
@@ -37,8 +43,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.main);
-
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -64,13 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog, int which) {
                 if (which == DialogInterface.BUTTON_POSITIVE){
                     // TODO: add code for running calibration process
-                    // Vibration for calib done indication
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(200, -1));
-                    }else{
-                        ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(200);
-                    }
-                    Toast.makeText(getApplicationContext(), "Calib done", Toast.LENGTH_SHORT).show();
+                    onCalibStart();
                 }
             }
         });
@@ -87,30 +85,83 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn.setOnClickListener(this);
 
 
-//        DrawView draw = new DrawView(getApplicationContext());
-//        DrawView iAzimuth = findViewById(R.id.vAzimuth);
-//
-//        iAzimuth.setBackgroundColor(0xFFFF0000);
-
-
-//        CompassListener listener = new CompassListener();
-
         SensorManager manager = (SensorManager)getSystemService(SENSOR_SERVICE);
 //        compass = manager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         manager.registerListener(new CompassListener(),
-                manager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
-//                manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-//                manager.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR),
-//                TYPE_GEOMAGNETIC_ROTATION_VECTOR
+//                manager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
+                manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
                 SensorManager.SENSOR_DELAY_NORMAL);
-
-
-//        TextView tCompass = findViewById(R.id.tCompass);
-//        tCompass.setText("<-");
-//        tCompass.setRotation(90.1f);
-
     }
 
+    private final int CALIB_CNT = 500;
+    private int calibCntr = CALIB_CNT+1;
+    private XmlSerializer xml=null;
+    private FileOutputStream fs=null;
+    private void onCalibStart(){
+        if (xml == null){
+            xml = Xml.newSerializer();
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    fs = new FileOutputStream(new File(getApplicationInfo().dataDir + File.separator+ "files" +File.separator + "magnetometer.xml"));
+                }
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+                xml = null;
+                return;
+            }
+        }
+        try {
+            xml.setOutput(fs, "UTF-8");
+            xml.startDocument("UTF-8", true);
+            xml.startTag("", "magnetometer");
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+            xml = null;
+            return;
+        }
+        calibCntr = 0;
+        Log.i("calib", "start");
+    }
+    private void onCalibProcess(Sensor sensor, float[] values){
+        if (calibCntr < CALIB_CNT) {
+            calibCntr++;
+            try {
+                xml.startTag("", "sensor");
+                xml.attribute("", "x", String.format("%.3f", values[0]).replace(',', '.'));
+                xml.attribute("", "y", String.format("%.3f", values[1]).replace(',', '.'));
+                xml.attribute("", "z", String.format("%.3f", values[2]).replace(',', '.'));
+                xml.endTag("","sensor");
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+            }
+
+            TextView tLevel;
+            tLevel = findViewById(R.id.tLevel);
+            tLevel.setText(String.format("%d", calibCntr));
+        }
+
+        if (calibCntr == CALIB_CNT) {
+            calibCntr++;
+            onCalibEnd();
+        }
+    }
+    private void onCalibEnd()  {
+        try {
+            xml.endTag("", "magnetometer");
+            xml.endDocument();
+            xml.flush();
+            Log.i("calib", "calib done");
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+        }
+        // Vibration for calib done indication
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(200, -1));
+        }else{
+            ((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(200);
+        }
+        Toast.makeText(getApplicationContext(), "Calib done", Toast.LENGTH_LONG).show();
+    }
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.bClear){
@@ -124,10 +175,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private class CompassListener implements SensorEventListener {
 
+
+    private class CompassListener implements SensorEventListener {
         @Override
         public void onSensorChanged(SensorEvent event) {
+            onCalibProcess(event.sensor, event.values);
 //            TextView tCompass;
             TextView tLevel;
             tLevel = findViewById(R.id.tLevel);
@@ -144,26 +197,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             float mod = event.values[0]*event.values[0] + event.values[1]*event.values[1];
             mod = (float)sqrt((double)mod);
-//            tLevel.setText(String.format("%.2f %.2f ",event.values[0]/mod, event.values[1]/mod));
-            tLevel.setText(String.format("%.2f %.2f %.2f",orientV[0], orientV[1], orientV[2]));
-
-
-//            tCompass.setRotation(-(float)(orientV[0]*180.f/PI));
+//            tLevel.setText(String.format("%.2f %.2f %.2f",orientV[0], orientV[1], orientV[2]));
             iCompass.setRotation(-(float)(orientV[0]*180.f/PI));
         }
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) { }
-    }
-
-    class DrawView extends View{
-
-        public DrawView(Context context) {
-            super(context);
-        }
-
-        @Override
-        protected void onDraw(@NonNull Canvas canvas) {
-            canvas.drawColor(0xFF0000FF);
-        }
     }
 }
