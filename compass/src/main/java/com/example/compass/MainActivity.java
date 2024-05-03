@@ -135,9 +135,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
             }
 
-            TextView tLevel;
-            tLevel = findViewById(R.id.tLevel);
-            tLevel.setText(String.format("%d", calibCntr));
+//            TextView tLevel;
+//            tLevel = findViewById(R.id.tLevel);
+//            tLevel.setText(String.format("%d", calibCntr));
         }
 
         if (calibCntr == CALIB_CNT) {
@@ -194,11 +194,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             SensorManager.getRotationMatrixFromVector(rotV, event.values);
             SensorManager.getOrientation(rotV, orientV);
 
+            float[] vals = {event.values[0],event.values[1], event.values[2]};
+//            float mod = event.values[0]*event.values[0] + event.values[1]*event.values[1];
+            double len = vals[0]*vals[0]+vals[1]*vals[1]+vals[2]*vals[2];
+            len = sqrt(len);
+            vals[0]/=len;
+            vals[1]/=len;
+            vals[2]/=len;
+            tLevel.setText(String.format("%.2f %.2f %.2f",vals[0], vals[1],vals[2]));
 
-            float mod = event.values[0]*event.values[0] + event.values[1]*event.values[1];
-            mod = (float)sqrt((double)mod);
-//            tLevel.setText(String.format("%.2f %.2f %.2f",orientV[0], orientV[1], orientV[2]));
-            iCompass.setRotation(-(float)(orientV[0]*180.f/PI));
+            iCompass.setRotation(-(float)(Math.asin(vals[0])*180.f/PI));
         }
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) { }
