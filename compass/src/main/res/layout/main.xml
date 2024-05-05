@@ -14,13 +14,6 @@
 
 
 
-        <TextView
-            android:id="@+id/tLevel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|right"
-            android:layout_margin="10dp"
-            android:text="Level" />
 
         <Button
             android:id="@+id/bCalib"
@@ -29,6 +22,29 @@
             android:layout_gravity="top|left"
             android:layout_margin="10dp"
             android:text="@string/bCalib" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tLevel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Level" />
+            <TextView
+                android:id="@+id/tMagnet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="M" />
+            <TextView
+                android:id="@+id/tGravity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="G" />
+        </LinearLayout>
 
 
     </FrameLayout>

@@ -2,6 +2,7 @@ package com.example.compass;
 
 import static android.app.PendingIntent.getActivity;
 import static java.lang.Math.PI;
+import static java.lang.Math.asin;
 import static java.lang.Math.sqrt;
 
 import android.content.DialogInterface;
@@ -86,10 +87,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         SensorManager manager = (SensorManager)getSystemService(SENSOR_SERVICE);
-//        compass = manager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
         manager.registerListener(new CompassListener(),
-//                manager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR),
                 manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        manager.registerListener(new CompassListener(),
+                manager.getDefaultSensor(Sensor.TYPE_GRAVITY),
                 SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -176,34 +178,67 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    private double[] gNorm = {0,0,0};
+    private double[] mNorm = {0,0,0};
+
 
     private class CompassListener implements SensorEventListener {
         @Override
         public void onSensorChanged(SensorEvent event) {
             onCalibProcess(event.sensor, event.values);
-//            TextView tCompass;
-            TextView tLevel;
-            tLevel = findViewById(R.id.tLevel);
-
             ImageView iCompass = findViewById(R.id.iCompass);
-//            tCompass = findViewById(R.id.tCompass);
+            //            iCompass.setRotation(-(float)(Math.asin(vals[0])*180.f/PI));
+            TextView tLevel, tMagnet, tGravity;
 
-            float[] rotV = new float[16];
-            float[] orientV = new float[3];
+            tLevel = findViewById(R.id.tLevel);
+            tMagnet = findViewById(R.id.tMagnet);
+            tGravity = findViewById(R.id.tGravity);
 
-            SensorManager.getRotationMatrixFromVector(rotV, event.values);
-            SensorManager.getOrientation(rotV, orientV);
-
-            float[] vals = {event.values[0],event.values[1], event.values[2]};
-//            float mod = event.values[0]*event.values[0] + event.values[1]*event.values[1];
-            double len = vals[0]*vals[0]+vals[1]*vals[1]+vals[2]*vals[2];
+            double len = event.values[0]*event.values[0]+event.values[1]*event.values[1]+event.values[2]*event.values[2];
             len = sqrt(len);
-            vals[0]/=len;
-            vals[1]/=len;
-            vals[2]/=len;
-            tLevel.setText(String.format("%.2f %.2f %.2f",vals[0], vals[1],vals[2]));
 
-            iCompass.setRotation(-(float)(Math.asin(vals[0])*180.f/PI));
+            if (event.sensor.getType() == Sensor.TYPE_GRAVITY){
+                gNorm[0] = event.values[0]/len;
+                gNorm[1] = event.values[1]/len;
+                gNorm[2] = event.values[2]/len;
+                tGravity.setText(String.format("G: %.2f %.2f %.2f",gNorm[0],gNorm[1],gNorm[2]));
+            }
+
+            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+                mNorm[0] = event.values[0]/len;
+                mNorm[1] = event.values[1]/len;
+                mNorm[2] = event.values[2]/len;
+                tMagnet.setText(String.format("M: %.2f %.2f %.2f",mNorm[0],mNorm[1],mNorm[2]));
+            }
+
+            // todo UPDATE level
+            double gxRoot = Math.sqrt(1-gNorm[0]*gNorm[0]);
+            double gyRoot = Math.sqrt(1-gNorm[1]*gNorm[1]);
+            double gx = gNorm[0];
+            double gy = gNorm[1];
+            double mx = mNorm[0];
+            double my = mNorm[1];
+            double mz = mNorm[2];
+
+            double m[] = {
+                    (mx*gxRoot + gx*mz),
+                    (-mx*gx*gy + my*gyRoot + mz*gy*gxRoot),
+                    (-mx*gx*gyRoot - my*gy + mz*gxRoot*gyRoot)
+            };
+            // magnetic deviation
+            tLevel.setText(String.format("%.2f %.2f %.2f",
+                    m[0],
+                    m[1],
+                    m[2]
+            ));
+
+            iCompass.setRotation((float)-Math.toDegrees(Math.asin(m[1])));
+
+//            // gravity deviation
+//            tLevel.setText(String.format("%.2f %.2f",
+//                    Math.toDegrees(Math.asin(gNorm[0])),
+//                    Math.toDegrees(Math.asin(gNorm[1]))
+//            ));
         }
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) { }
