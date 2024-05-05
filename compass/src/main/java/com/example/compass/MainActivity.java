@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private double[] gNorm = {0,0,0};
     private double[] mNorm = {0,0,0};
+    private double mgLen[] = {0,0};
 
 
     private class CompassListener implements SensorEventListener {
@@ -201,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 gNorm[0] = event.values[0]/len;
                 gNorm[1] = event.values[1]/len;
                 gNorm[2] = event.values[2]/len;
+                mgLen[1] = len;
                 tGravity.setText(String.format("G: %.2f %.2f %.2f",gNorm[0],gNorm[1],gNorm[2]));
             }
 
@@ -208,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mNorm[0] = event.values[0]/len;
                 mNorm[1] = event.values[1]/len;
                 mNorm[2] = event.values[2]/len;
+                mgLen[0] = len;
                 tMagnet.setText(String.format("M: %.2f %.2f %.2f",mNorm[0],mNorm[1],mNorm[2]));
             }
 
@@ -220,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             double my = mNorm[1];
             double mz = mNorm[2];
 
+            double cos_a = gNorm[0]*mNorm[0] + gNorm[1]*mNorm[1] + gNorm[2]*mNorm[2];
             double m[] = {
                     (mx*gxRoot + gx*mz),
                     (-mx*gx*gy + my*gyRoot + mz*gy*gxRoot),
@@ -227,10 +231,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             };
             // magnetic deviation
             tLevel.setText(String.format("%.2f %.2f %.2f",
-                    m[0],
-                    m[1],
-                    m[2]
+                    Math.toDegrees(Math.acos(cos_a)),
+                    mNorm[1] + Math.sin(Math.acos(cos_a) - PI/2 - Math.asin(gNorm[1])),
+                    Math.sin(Math.acos(cos_a) - PI/2)
             ));
+//            tLevel.setText(String.format("%.2f %.2f %.2f",
+//                    m[0],
+//                    m[1],
+//                    m[2]
+//            ));
 
             iCompass.setRotation((float)-Math.toDegrees(Math.asin(m[1])));
 
