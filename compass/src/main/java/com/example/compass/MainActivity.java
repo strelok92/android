@@ -182,6 +182,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private double[] mNorm = {0,0,0};
     private double mgLen[] = {0,0};
 
+    private double rls_p=0.01f;
+    private double rls_a=1.f;
+    private double rls(double x, double y){
+        double lamb = 0.95f;
+        double r = rls_p*x*x;
+        double s = rls_p*x/(lamb + r);
+        rls_p = (1.f - s*x)*rls_p/lamb;
+        double e = y - rls_a*x;
+        rls_a += e*s;
+        Log.i("RLS", String.format("%f", e));
+        return rls_a*x;
+    }
+    private double iira(double newVal, double oldVal, double k){
+        return k*oldVal + (1-k)*newVal;
+    }
+    double cos_a = 0;
 
     private class CompassListener implements SensorEventListener {
         @Override
@@ -223,25 +239,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             double my = mNorm[1];
             double mz = mNorm[2];
 
-            double cos_a = gNorm[0]*mNorm[0] + gNorm[1]*mNorm[1] + gNorm[2]*mNorm[2];
-            double m[] = {
-                    (mx*gxRoot + gx*mz),
-                    (-mx*gx*gy + my*gyRoot + mz*gy*gxRoot),
-                    (-mx*gx*gyRoot - my*gy + mz*gxRoot*gyRoot)
-            };
+            if (cos_a == 0) {
+                cos_a = gNorm[0] * mNorm[0] + gNorm[1] * mNorm[1] + gNorm[2] * mNorm[2];
+            }
+            cos_a = iira((gNorm[0] * mNorm[0] + gNorm[1] * mNorm[1] + gNorm[2] * mNorm[2]), cos_a, 0.6f);
+
+            double angle = Math.acos(cos_a);
+            angle -= PI/2;
+
+            double vLen = Math.cos(angle);
+            double vX = mNorm[0];
+            double vY = mNorm[1];
+
             // magnetic deviation
-            tLevel.setText(String.format("%.2f %.2f %.2f",
-                    Math.toDegrees(Math.acos(cos_a)),
-                    mNorm[1] + Math.sin(Math.acos(cos_a) - PI/2 - Math.asin(gNorm[1])),
-                    Math.sin(Math.acos(cos_a) - PI/2)
+            tLevel.setText(String.format("%.2f %.2f %.2f %.2f",
+                    vLen,
+                    vY,
+                    vY/vLen,
+                    Math.acos(vY/vLen)
             ));
+
+//            double cos_a = gNorm[0]*mNorm[0] + gNorm[1]*mNorm[1] + gNorm[2]*mNorm[2];
+//            double m[] = {
+//                    (mx*gxRoot + gx*mz),
+//                    (-mx*gx*gy + my*gyRoot + mz*gy*gxRoot),
+//                    (-mx*gx*gyRoot - my*gy + mz*gxRoot*gyRoot)
+//            };
+//            // magnetic deviation
 //            tLevel.setText(String.format("%.2f %.2f %.2f",
-//                    m[0],
-//                    m[1],
-//                    m[2]
+//                    Math.toDegrees(Math.acos(cos_a)),
+//                    mNorm[1] + Math.sin(Math.acos(cos_a) - PI/2 - Math.asin(gNorm[1])),
+//                    Math.sin(Math.acos(cos_a) - PI/2)
 //            ));
 
-            iCompass.setRotation((float)-Math.toDegrees(Math.asin(m[1])));
+
+//            iCompass.setRotation((float)-Math.toDegrees(Math.asin(m[1])));
 
 //            // gravity deviation
 //            tLevel.setText(String.format("%.2f %.2f",
