@@ -23,3 +23,4 @@ rootProject.name = "app"
 include(":app")
 include(":calculator")
 include(":compass")
+include(":boiler")
