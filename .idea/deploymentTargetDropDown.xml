@@ -14,6 +14,9 @@
       <entry key="compass">
         <State />
       </entry>
+      <entry key="sshfileexplorer">
+        <State />
+      </entry>
     </value>
   </component>
 </project>

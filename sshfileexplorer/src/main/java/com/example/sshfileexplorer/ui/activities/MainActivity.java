@@ -2,9 +2,10 @@ package com.example.sshfileexplorer.ui.activities;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.ActionBar;
@@ -14,16 +15,18 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sshfileexplorer.R;
+import com.example.sshfileexplorer.ui.adapters.ServerListAdapter;
 import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
+    String TAG = "TAG SSH EXPLORER";
+
+    private ServerListAdapter srvListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,35 +54,40 @@ public class MainActivity extends AppCompatActivity {
         btnAddServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ServerAddDialog dialog = new ServerAddDialog();
+                ServerAddDialog dialog = new ServerAddDialog(MainActivity.this);
                 dialog.show(getSupportFragmentManager(), "");
             }
         });
 
-        // Create servers list
 
-        ArrayList<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
-        Map<String, Object> m;
-        // item 1
-        m = new HashMap<>();
-        m.put("tSrvItemTitle", "OrangePI");
-        m.put("tSrvItemAddr", "192.168.1.23:22");
-        data.add(m);
+        // Servers list
 
-        // item 2
-        m = new HashMap<>();
-        m.put("tSrvItemTitle", "BananaPI");
-        m.put("tSrvItemAddr", "192.168.10.54:225");
-        data.add(m);
+        srvListAdapter = new ServerListAdapter(this);
 
-        String from[] = {"tSrvItemTitle", "tSrvItemAddr"};
-        int to[] = {R.id.tSrvItemTitle, R.id.tSrvItemAddr, };
+        srvListAdapter.addItem("Opange PI", "192.142.23.55:22");
+        srvListAdapter.addItem("Banana PI", "192.142.23.65:23");
+        srvListAdapter.addItem("Ubuntu SSH", "192.142.23.25:23");
 
-        SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.fragment_server_list_item,
-                from, to);
 
-        ListView srvList = findViewById(R.id.serversList);
-        srvList.setAdapter(adapter);
-
+        ListView srvListView = findViewById(R.id.serversList);
+        srvListView.setAdapter(srvListAdapter);
+        srvListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String[] list = (String[]) srvListAdapter.getItem(position);
+                Log.w(TAG, String.format("%s (%s)", list[0], list[1]));
+            }
+        });
     }
+
+
+    public void addServer(String name, String ip_addr, String ip_port){
+
+        // todo check is exist
+        // todo add server to base
+
+        srvListAdapter.addItem(name, ip_addr + ":"+ip_port);
+        srvListAdapter.notifyDataSetChanged();
+    }
+
 }
