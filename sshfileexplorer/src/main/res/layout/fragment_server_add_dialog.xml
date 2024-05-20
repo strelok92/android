@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.dialogs.ServerAddDialog">
+    <LinearLayout
+        style="@style/dialog_frame"
+        android:orientation="vertical"
+        >
+        <!--Title-->
+        <TextView
+            android:id="@+id/textView"
+            style="@style/dialog_title"
+            android:text="Add SSH server"/>
+
+        <!--Enter Addr-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/dialog_lbl"
+                android:layout_weight="2"
+                android:text="Remote IP addr:" />
+
+
+            <EditText
+                android:id="@+id/ip_addr"
+                style="@style/dialog_entry"
+                android:inputType="numberDecimal"
+                android:digits="0123456789."
+                android:text="" />
+
+        </LinearLayout>
+
+        <!--Enter Port-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/textView3"
+                style="@style/dialog_lbl"
+                android:layout_weight="2"
+                android:text="Remote IP port:" />
+            <EditText
+                android:id="@+id/ip_port"
+                style="@style/dialog_entry"
+                android:inputType="number"
+                android:maxLength="4"
+                android:text="22" />
+        </LinearLayout>
+
+        <!--Enter Name-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/textView4"
+                style="@style/dialog_lbl"
+                android:text="Name:" />
+            <EditText
+                android:id="@+id/server_name"
+                style="@style/dialog_entry"
+                android:inputType="text"
+                android:text="" />
+        </LinearLayout>
+
+        <!--Buttons-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bAdd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/dialog_txt"
+                android:backgroundTint="@color/dialog_fg"
+                android:layout_margin="4dp"
+                android:textSize="20dp"
+
+                android:text="Add" />
+
+            <Button
+                android:id="@+id/bConnect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/dialog_fg"
+                android:textSize="20dp"
+                android:textColor="@color/dialog_txt"
+                android:layout_margin="4dp"
+                android:text="Connect" />
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>

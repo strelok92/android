@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/boiler" />
             <option value="$PROJECT_DIR$/calculator" />
             <option value="$PROJECT_DIR$/compass" />
+            <option value="$PROJECT_DIR$/sshfileexplorer" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
