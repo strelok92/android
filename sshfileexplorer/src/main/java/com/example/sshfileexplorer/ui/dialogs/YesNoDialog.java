@@ -1,37 +1,66 @@
 package com.example.sshfileexplorer.ui.dialogs;
 
-import android.app.Activity;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.sshfileexplorer.R;
 
-public class YesNoDialog extends DialogFragment {
+public class YesNoDialog extends DialogFragment{
+    String TAG = "TAG SSH EXPLORER";
+    private String title = null;
+    private String message = null;
+    private String btnYes = null;
+    private String btnNo = null;
+    private View.OnClickListener btnYesListener = null;
+    private View.OnClickListener btnNoListener = null;
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_yes_no_dialog, container, false);
 
-    private Activity parentActivity;
-    private Runnable btnYes, btnNo;
+        if (title != null) ((TextView)view.findViewById(R.id.titleYesNo)).setText(title);
+        if (message != null) ((TextView)view.findViewById(R.id.msgYesNo)).setText(message);
 
-    public YesNoDialog(Activity activity, Runnable yes, Runnable no ) {
-        parentActivity = activity;
-        btnYes = yes;
-        btnNo = no;
+        Button btn = (Button)view.findViewById(R.id.bYes);
+
+        if (btnYes == null) {
+            btn.setVisibility(View.INVISIBLE);
+        }else{
+            btn.setText(btnYes);
+            btn.setOnClickListener(btnYesListener);
+        }
+
+        btn = (Button)view.findViewById(R.id.bNo);
+        if (btnNo == null) {
+            btn.setVisibility(View.INVISIBLE);
+        }else{
+            btn.setText(btnNo);
+            btn.setOnClickListener(btnNoListener);
+        }
+        return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void setTitle(CharSequence str){
+        title = str.toString();
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_yes_no_dialog, container, false);
+    public void setMessage(CharSequence str){
+        message = str.toString();
+    }
+    public void setButtonYes(CharSequence str, View.OnClickListener listener){
+        btnYes = str.toString();
+        btnYesListener = listener;
+    }
+    public void setButtonNo(CharSequence str, View.OnClickListener listener){
+        btnNo = str.toString();
+        btnNoListener = listener;
     }
 }

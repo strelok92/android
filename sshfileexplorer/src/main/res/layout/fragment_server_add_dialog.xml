@@ -77,25 +77,12 @@
 
             <Button
                 android:id="@+id/bAdd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@color/dialog_txt"
-                android:backgroundTint="@color/dialog_fg"
-                android:layout_margin="4dp"
-                android:textSize="20dp"
-
+                style="@style/dialog_button"
                 android:text="Add" />
 
             <Button
                 android:id="@+id/bConnect"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/dialog_fg"
-                android:textSize="20dp"
-                android:textColor="@color/dialog_txt"
-                android:layout_margin="4dp"
+                style="@style/dialog_button"
                 android:text="Connect" />
         </LinearLayout>
 

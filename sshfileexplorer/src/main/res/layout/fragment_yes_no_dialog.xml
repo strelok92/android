@@ -1,14 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.dialogs.YesNoDialog">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Yes/No dialog" />
+        tools:context=".ui.dialogs.YesNoDialog">
+    <LinearLayout
+        style="@style/dialog_frame"
+        android:orientation="vertical">
 
+    <!--Title-->
+    <TextView
+        android:id="@+id/titleYesNo"
+        style="@style/dialog_title"
+        android:text=""/>
+
+        <TextView
+            android:id="@+id/msgYesNo"
+            style="@style/dialog_lbl"
+            android:text="" />
+
+        <!--Buttons-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bNo"
+                style="@style/dialog_button"
+                android:text="No" />
+
+            <Button
+                android:id="@+id/bYes"
+                style="@style/dialog_button"
+                android:text="Yes" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
 </FrameLayout>

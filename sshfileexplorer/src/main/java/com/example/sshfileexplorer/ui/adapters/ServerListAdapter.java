@@ -21,10 +21,11 @@ public class ServerListAdapter extends BaseAdapter {
 
     private LayoutInflater lInflater;
     private ArrayList<String[]> srvList;
+    private OnRemoveListener removeListener = null;
 
     public ServerListAdapter(Context ctx){
         lInflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        srvList = new ArrayList<String[]>();
+        srvList = new ArrayList<>();
     }
     @Override
     public int getCount() {return srvList.size();}
@@ -42,41 +43,31 @@ public class ServerListAdapter extends BaseAdapter {
             view = lInflater.inflate(R.layout.fragment_server_list_item, parent, false);
 
             // Item select listener
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AdapterView.OnItemClickListener listener = ((AdapterView) parent).getOnItemClickListener();
-                    if (listener != null) {
-                        listener.onItemClick((AdapterView) parent, v, position, position);
-                    }
+            view.setOnClickListener(v -> {
+                AdapterView.OnItemClickListener listener = ((AdapterView) parent).getOnItemClickListener();
+                if (listener != null) {
+                    listener.onItemClick((AdapterView) parent, v, position, position);
                 }
             });
 
             // Remove item listener
-            view.findViewById(R.id.bSrvItemDel).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (removeListener != null){
-                        removeListener.onItemRemove((AdapterView) parent, v, position, position);
-                    }
+            view.findViewById(R.id.bSrvItemDel).setOnClickListener(v -> {
+                if (removeListener != null){
+                    removeListener.onItemRemove((AdapterView) parent, v, position, position);
                 }
             });
         }
 
         // Update item data on the View
         String[] item = srvList.get(position);
-        TextView text;
-        text = view.findViewById(R.id.tSrvItemTitle);
-        text.setText(item[0]);
-        text = view.findViewById(R.id.tSrvItemAddr);
-        text.setText(item[1]);
+
+        ((TextView)view.findViewById(R.id.tSrvItemTitle)).setText(item[0]);
+        ((TextView)view.findViewById(R.id.tSrvItemAddr)).setText(item[1]);
 
         return view;
     }
     public void addItem(@NonNull String title,@NonNull String data){srvList.add(new String[]{title, data});}
-    public void deleteItem(int position){srvList.remove(position);}
-
-    private OnRemoveListener removeListener = null;
+    public void deleteItem(long id){srvList.remove((int)id);}
     public void setOnRemoveListener(OnRemoveListener listener){
         removeListener = listener;
     }

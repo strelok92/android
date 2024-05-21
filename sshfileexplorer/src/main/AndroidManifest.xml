@@ -9,10 +9,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App">
         <activity
+            android:name=".ui.activities.FileExplorerActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activities.MainActivity"
-            android:launchMode="singleTask"
-            android:exported="true">
-
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

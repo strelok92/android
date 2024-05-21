@@ -8,8 +8,4 @@
     <color name="dialog_txt">#FFFFFFFF</color>
     <color name="dialog_entry">#FF506f59</color>
     <color name="dialog_err">#FFfa5625</color>
-    <color name="light_blue_400">#FF29B6F6</color>
-    <color name="light_blue_600">#FF039BE5</color>
-    <color name="gray_400">#FFBDBDBD</color>
-    <color name="gray_600">#FF757575</color>
 </resources>

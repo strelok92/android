@@ -1,5 +1,6 @@
 package com.example.sshfileexplorer.ui.activities;
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,9 +21,6 @@ import com.example.sshfileexplorer.ui.adapters.ServerListAdapter;
 import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,39 +64,41 @@ public class MainActivity extends AppCompatActivity {
 
         srvListAdapter = new ServerListAdapter(this);
 
+
+        // todo read from base
+
         srvListAdapter.addItem("Opange PI", "192.142.23.55:22");
         srvListAdapter.addItem("Banana PI", "192.142.23.65:23");
         srvListAdapter.addItem("Ubuntu SSH", "192.142.23.25:23");
 
-
         ListView srvListView = findViewById(R.id.serversList);
         srvListView.setAdapter(srvListAdapter);
-        srvListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String[] list = (String[]) srvListAdapter.getItem(position);
-                Log.w(TAG, String.format("%s (%s)", list[0], list[1]));
-            }
+        srvListView.setOnItemClickListener((parent, view, position, id) -> {
+            String[] list = (String[]) srvListAdapter.getItem(position);
+
+            Log.d(TAG, String.format("%s (%s)", list[0], list[1]));
+
+            // todo open file system activity
+            Intent intent = new Intent(this, FileExplorerActivity.class);
+            startActivity(intent);
+
         });
-        srvListAdapter.setOnRemoveListener(new OnRemoveListener() {
-            // todo change to AlertDialod extends
-            // @ ref https://startandroid.ru/ru/uroki/vse-uroki-spiskom/119-urok-60-dialogi-alertdialog-title-message-icon-buttons.html
-            @Override
-            public void onItemRemove(AdapterView<?> parent, View view, int position, long id) {
-                YesNoDialog dialog = new YesNoDialog(MainActivity.this,
-                        // Yes
-                        ()->{srvListAdapter.deleteItem(position);
-                            srvListAdapter.notifyDataSetChanged();
-                            },
-                        // No
-                        null
-                );
+        srvListAdapter.setOnRemoveListener((parent, view, position, id) -> {
+            YesNoDialog dialog = new YesNoDialog();
+            String[] list = (String[]) srvListAdapter.getItem(position);
 
+            dialog.setTitle("Remove SSH server");
+            dialog.setMessage("Do you want to remove \'" + list[0] + "\'?");
 
-            }
+            dialog.setButtonYes("Yes", v -> {
+                srvListAdapter.deleteItem(id);
+                srvListAdapter.notifyDataSetChanged();
+                dialog.dismiss();
+            });
+            dialog.setButtonNo("No", v -> dialog.dismiss());
+
+            dialog.show(getSupportFragmentManager(), "");
         });
-
-
     }
 
 

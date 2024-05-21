@@ -50,6 +50,19 @@
     </style>
 
 
+    <style name="dialog_button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+
+        <item name="android:textColor">@color/dialog_txt</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:backgroundTint">@color/dialog_fg</item>
+
+
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
     <style name="srv_item_frame">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
