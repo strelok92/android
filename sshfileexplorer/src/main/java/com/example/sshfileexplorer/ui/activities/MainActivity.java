@@ -15,8 +15,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sshfileexplorer.R;
+import com.example.sshfileexplorer.ui.adapters.OnRemoveListener;
 import com.example.sshfileexplorer.ui.adapters.ServerListAdapter;
 import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
+import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -78,6 +80,25 @@ public class MainActivity extends AppCompatActivity {
                 Log.w(TAG, String.format("%s (%s)", list[0], list[1]));
             }
         });
+        srvListAdapter.setOnRemoveListener(new OnRemoveListener() {
+            // todo change to AlertDialod extends
+            // @ ref https://startandroid.ru/ru/uroki/vse-uroki-spiskom/119-urok-60-dialogi-alertdialog-title-message-icon-buttons.html
+            @Override
+            public void onItemRemove(AdapterView<?> parent, View view, int position, long id) {
+                YesNoDialog dialog = new YesNoDialog(MainActivity.this,
+                        // Yes
+                        ()->{srvListAdapter.deleteItem(position);
+                            srvListAdapter.notifyDataSetChanged();
+                            },
+                        // No
+                        null
+                );
+
+
+            }
+        });
+
+
     }
 
 
@@ -89,5 +110,4 @@ public class MainActivity extends AppCompatActivity {
         srvListAdapter.addItem(name, ip_addr + ":"+ip_port);
         srvListAdapter.notifyDataSetChanged();
     }
-
 }

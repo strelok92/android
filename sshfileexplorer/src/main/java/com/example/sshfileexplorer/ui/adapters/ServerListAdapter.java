@@ -34,45 +34,52 @@ public class ServerListAdapter extends BaseAdapter {
     public long getItemId(int position) {return position;}
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.d(TAG,String.format("GET VIEW %d", position));
+
+        // Create View
+
         View view = convertView;
-        if (view == null){
+        if (view == null) {
             view = lInflater.inflate(R.layout.fragment_server_list_item, parent, false);
+
+            // Item select listener
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AdapterView.OnItemClickListener listener = ((AdapterView)parent).getOnItemClickListener();
-                    if (listener != null){
-                        listener.onItemClick((AdapterView)parent, v,position, position);
+                    AdapterView.OnItemClickListener listener = ((AdapterView) parent).getOnItemClickListener();
+                    if (listener != null) {
+                        listener.onItemClick((AdapterView) parent, v, position, position);
                     }
                 }
             });
 
-            String[] item = srvList.get(position);
-            TextView text;
-            text = view.findViewById(R.id.tSrvItemTitle);
-            text.setText(item[0]);
-            text = view.findViewById(R.id.tSrvItemAddr);
-            text.setText(item[1]);
-
-            ImageButton btn = view.findViewById(R.id.bSrvItemDel);
-            btn.setOnClickListener(new View.OnClickListener() {
+            // Remove item listener
+            view.findViewById(R.id.bSrvItemDel).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i(TAG, String.format("Remove %d", position));
-
-                    // fixme {
-                    deleteItem(position);
-                    notifyDataSetChanged();
-
-                    // }
+                    if (removeListener != null){
+                        removeListener.onItemRemove((AdapterView) parent, v, position, position);
+                    }
                 }
             });
         }
+
+        // Update item data on the View
+        String[] item = srvList.get(position);
+        TextView text;
+        text = view.findViewById(R.id.tSrvItemTitle);
+        text.setText(item[0]);
+        text = view.findViewById(R.id.tSrvItemAddr);
+        text.setText(item[1]);
+
         return view;
     }
-    public void addItem(@NonNull String title,@NonNull String data){
-        srvList.add(new String[]{title, data});}
-    public void deleteItem(int position){
-        srvList.remove(position);}
+    public void addItem(@NonNull String title,@NonNull String data){srvList.add(new String[]{title, data});}
+    public void deleteItem(int position){srvList.remove(position);}
+
+    private OnRemoveListener removeListener = null;
+    public void setOnRemoveListener(OnRemoveListener listener){
+        removeListener = listener;
+    }
 }
+
+

@@ -42,7 +42,7 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
 
         ip_addr = (EditText)view.findViewById(R.id.ip_addr);
         ip_addr.addTextChangedListener(new EntryValidator(ip_addr));
-        ip_addr.setBackgroundResource(R.drawable.dialog_entry_err);
+//        ip_addr.setBackgroundResource(R.drawable.dialog_entry_err);
 
         ip_port = (EditText)view.findViewById(R.id.ip_port);
         ip_port.addTextChangedListener(new EntryValidator(ip_port));
