@@ -17,6 +17,7 @@ import com.example.sshfileexplorer.R;
 import java.util.ArrayList;
 
 public class ServerListAdapter extends BaseAdapter {
+    public interface OnRemoveListener {void onItemRemove(AdapterView<?> parent, View view, int position, long id);}
     String TAG = "TAG SSH EXPLORER";
 
     private LayoutInflater lInflater;

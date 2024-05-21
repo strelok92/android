@@ -5,7 +5,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
@@ -16,7 +15,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sshfileexplorer.R;
-import com.example.sshfileexplorer.ui.adapters.OnRemoveListener;
 import com.example.sshfileexplorer.ui.adapters.ServerListAdapter;
 import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
