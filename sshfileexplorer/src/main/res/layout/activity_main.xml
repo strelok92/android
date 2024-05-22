@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dialog_background"
     tools:context=".ui.activities.MainActivity">
 
     <ListView
@@ -13,6 +14,7 @@
         android:layout_height="match_parent"
         android:focusable="false"
         android:focusableInTouchMode="false"
+        android:divider="@color/item_text"
         />
 
     <RelativeLayout
@@ -29,7 +31,7 @@
             android:clickable="true"
             app:srcCompat="@android:drawable/ic_input_add"
             android:layout_margin="30dp"
-            android:backgroundTint="@color/dialog_fg"
+            android:backgroundTint="@color/dialog_button"
             tools:ignore="MissingConstraints" />
     </RelativeLayout>
 

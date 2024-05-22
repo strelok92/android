@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.DialogFragment;
 
 import android.view.LayoutInflater;
@@ -30,7 +29,7 @@ public class YesNoDialog extends DialogFragment{
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_yes_no_dialog, container, false);
+        View view = inflater.inflate(R.layout.dialog_yes_no, container, false);
 
         try {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

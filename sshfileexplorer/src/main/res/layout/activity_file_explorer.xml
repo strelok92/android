@@ -5,18 +5,17 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dialog_background"
     tools:context=".ui.activities.FileExplorerActivity">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
 
-        <TextView
-            android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="TextView" />
-    </FrameLayout>
+        <ListView
+            android:id="@+id/filesList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:divider="@color/item_text"
+            android:dividerHeight="1dp"
+            />
 </androidx.constraintlayout.widget.ConstraintLayout>

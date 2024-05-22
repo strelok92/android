@@ -1,6 +1,7 @@
 package com.example.sshfileexplorer.ui.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,11 +41,12 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             ActionBar bar = getSupportActionBar();
-            bar.setBackgroundDrawable(new ColorDrawable(getColor(R.color.dialog_fg)));
+//            bar.setBackgroundDrawable(new ColorDrawable(getColor(R.color.dialog_fg)));
             bar.setTitle("Select server");
         }catch (Exception e){
             // No action bar, nothing modify
         }
+        this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // for background and corner support
 
         // "Add server" button
 

@@ -2,19 +2,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="@color/dialog_entry"
     >
 
     <LinearLayout
-        style="@style/srv_item_frame"
+        style="@style/item_server_frame"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/tSrvItemTitle"
-            style="@style/srv_item_title" />
+            style="@style/item_server_title" />
 
         <TextView
             android:id="@+id/tSrvItemAddr"
-            style="@style/srv_item_addr" />
+            style="@style/item_server_info" />
 
     </LinearLayout>
 
@@ -27,8 +28,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@android:drawable/ic_delete"
-            android:layout_gravity="right"
-
+            android:layout_gravity="right|center"
+            android:layout_margin="10dp"
+            android:backgroundTint="#00FFFFFF"
             />
 
     </FrameLayout>

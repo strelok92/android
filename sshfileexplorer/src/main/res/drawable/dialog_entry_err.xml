@@ -4,7 +4,7 @@
     <solid android:color="@color/dialog_entry"/>
     <stroke
         android:width="1dp"
-        android:color="@color/dialog_err"
+        android:color="@color/error"
         />
     <corners android:radius="@dimen/dialog_corner_entry" />
 </shape>

@@ -4,7 +4,7 @@
     <style name="dialog_frame">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/dialog_background</item>
+        <item name="android:background">@drawable/dialog_frame</item>
     </style>
 
     <style name="dialog_title">
@@ -38,8 +38,6 @@
         <item name="android:backgroundTint">@color/dialog_button</item>
     </style>
 
-<!--    OLD -->
-
     <style name="dialog_entry">
         <item name="android:textSize">@dimen/dialog_text</item>
         <item name="android:textColor">@color/dialog_text</item>
@@ -50,49 +48,46 @@
         <item name="android:ems">10</item>
         <item name="android:background">@drawable/dialog_entry</item>
 
-        <item name="android:layout_margin">5dp</item>
+        <item name="android:layout_margin">1dp</item>
         <item name="android:paddingLeft">5dp</item>
         <item name="android:gravity">left</item>
     </style>
 
 
 
-    <style name="dialog_btn">
-        <item name="android:backgroundTint">@color/dialog_fg</item>
-    </style>
-
-    <style name="srv_item_frame">
+    <style name="item_server_frame">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@color/dialog_fg</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:background">@drawable/item_server_frame</item>
     </style>
 
-    <style name="srv_item_title">
+    <style name="item_server_title">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-<!--        <item name="android:layout_weight">2</item>-->
-        <item name="android:layout_marginTop">1dp</item>
-        <item name="android:layout_marginLeft">1dp</item>
-        <item name="android:layout_marginRight">1dp</item>
-        <item name="android:padding">5dp</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingTop">5dp</item>
         <item name="android:gravity">left</item>
-        <item name="android:textSize">15dp</item>
-        <item name="android:background">@color/dialog_entry</item>
-        <item name="android:textColor">@color/dialog_txt</item>
+
+        <item name="android:textSize">@dimen/item_title</item>
+        <item name="android:textColor">@color/item_title</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="srv_item_addr">
-        <item name="android:textSize">10dp</item>
-        <item name="android:textColor">@color/dialog_txt</item>
+    <style name="item_server_info">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">1dp</item>
-        <item name="android:layout_marginLeft">1dp</item>
-        <item name="android:layout_marginRight">1dp</item>
-<!--        <item name="android:layout_weight">2</item>-->
-        <item name="android:background">@color/dialog_entry</item>
-        <item name="android:padding">2dp</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
         <item name="android:gravity">left</item>
+
+        <item name="android:textSize">@dimen/item_text</item>
+        <item name="android:textColor">@color/item_text</item>
+
     </style>
 </resources>

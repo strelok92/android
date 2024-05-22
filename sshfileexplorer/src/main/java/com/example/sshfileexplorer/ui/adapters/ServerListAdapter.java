@@ -1,13 +1,11 @@
 package com.example.sshfileexplorer.ui.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,7 +39,7 @@ public class ServerListAdapter extends BaseAdapter {
 
         View view = convertView;
         if (view == null) {
-            view = lInflater.inflate(R.layout.fragment_server_list_item, parent, false);
+            view = lInflater.inflate(R.layout.fragment_item_server, parent, false);
 
             // Item select listener
             view.setOnClickListener(v -> {

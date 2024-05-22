@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
 
-    <color name="dialog_bg">#FF050505</color>
-    <color name="dialog_fg">#FF005117</color>
-    <color name="dialog_txt">#FFFFFFFF</color>
-<!--    <color name="dialog_entry">#FF506f59</color>-->
-    <color name="dialog_err">#FFfa5625</color>
+    <!-- Common -->
+    <color name="error">#7FFF0000</color>
 
+    <!-- Dialogs -->
     <color name="dialog_title">#FF005117</color>
     <color name="dialog_background">#FF506f59</color>
     <color name="dialog_button">#FF005117</color>
     <color name="dialog_text">#FFFFFFFF</color>
     <color name="dialog_entry">#7F005117</color>
+
+    <!-- Items -->
+    <color name="item_background">#FF005117</color>
+    <color name="item_title">#FFFFFFFF</color>
+    <color name="item_text">#7FFFFFFF</color>
 </resources>

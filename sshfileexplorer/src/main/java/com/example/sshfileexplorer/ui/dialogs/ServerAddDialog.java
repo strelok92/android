@@ -9,7 +9,6 @@ import androidx.fragment.app.DialogFragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,7 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_server_add_dialog, container, false);
+        View view = inflater.inflate(R.layout.dialog_server_add, container, false);
 
         try {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
