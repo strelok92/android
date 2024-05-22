@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--  shape  -->
+    <dimen name="dialog_corner">10dp</dimen>
+    <dimen name="dialog_corner_entry">5dp</dimen>
+    <!--  text  -->
+    <dimen name="dialog_title">20dp</dimen>
+    <dimen name="dialog_text">18dp</dimen>
+    <dimen name="dialog_button">18dp</dimen>
+</resources>

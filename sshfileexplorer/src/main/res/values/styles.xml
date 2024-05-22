@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="dialog_btn">
-        <item name="android:backgroundTint">@color/dialog_fg</item>
-    </style>
-
     <style name="dialog_frame">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <!--        <item name="android:layout_margin">2dp</item>-->
-        <item name="android:background">@color/dialog_bg</item>
+        <item name="android:background">@drawable/dialog_background</item>
     </style>
 
     <style name="dialog_title">
@@ -18,15 +13,15 @@
         <item name="android:layout_weight">2</item>
         <item name="android:padding">5dp</item>
         <item name="android:gravity">top|center</item>
-        <item name="android:textSize">15dp</item>
-        <item name="android:background">@color/dialog_fg</item>
-        <item name="android:textColor">@color/dialog_txt</item>
+        <item name="android:textSize">@dimen/dialog_title</item>
+        <item name="android:background">@drawable/dialog_title</item>
+        <item name="android:textColor">@color/dialog_text</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="dialog_lbl">
-        <item name="android:textSize">15dp</item>
-        <item name="android:textColor">@color/dialog_txt</item>
+    <style name="dialog_text">
+        <item name="android:textSize">@dimen/dialog_text</item>
+        <item name="android:textColor">@color/dialog_text</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">2</item>
@@ -34,9 +29,20 @@
         <item name="android:gravity">left</item>
     </style>
 
+    <style name="dialog_button">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/dialog_text</item>
+        <item name="android:textSize">@dimen/dialog_button</item>
+        <item name="android:backgroundTint">@color/dialog_button</item>
+    </style>
+
+<!--    OLD -->
+
     <style name="dialog_entry">
-        <item name="android:textSize">18dp</item>
-        <item name="android:textColor">@color/dialog_txt</item>
+        <item name="android:textSize">@dimen/dialog_text</item>
+        <item name="android:textColor">@color/dialog_text</item>
         <item name="android:maxLength">15</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -44,23 +50,15 @@
         <item name="android:ems">10</item>
         <item name="android:background">@drawable/dialog_entry</item>
 
-        <item name="android:layout_margin">3dp</item>
-        <item name="android:padding">2dp</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:paddingLeft">5dp</item>
         <item name="android:gravity">left</item>
     </style>
 
 
-    <style name="dialog_button">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
 
-        <item name="android:textColor">@color/dialog_txt</item>
-        <item name="android:textSize">20dp</item>
+    <style name="dialog_btn">
         <item name="android:backgroundTint">@color/dialog_fg</item>
-
-
-        <item name="android:layout_margin">4dp</item>
     </style>
 
     <style name="srv_item_frame">

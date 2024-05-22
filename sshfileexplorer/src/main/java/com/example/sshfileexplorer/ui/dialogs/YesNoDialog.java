@@ -1,9 +1,13 @@
 package com.example.sshfileexplorer.ui.dialogs;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.DialogFragment;
 
 import android.view.LayoutInflater;
@@ -22,10 +26,17 @@ public class YesNoDialog extends DialogFragment{
     private String btnNo = null;
     private View.OnClickListener btnYesListener = null;
     private View.OnClickListener btnNoListener = null;
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_yes_no_dialog, container, false);
+
+        try {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }catch (Exception e){
+            // todo add code
+        }
 
         if (title != null) ((TextView)view.findViewById(R.id.titleYesNo)).setText(title);
         if (message != null) ((TextView)view.findViewById(R.id.msgYesNo)).setText(message);

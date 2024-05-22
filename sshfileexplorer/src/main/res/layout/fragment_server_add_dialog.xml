@@ -3,11 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.dialogs.ServerAddDialog">
+
     <LinearLayout
         style="@style/dialog_frame"
         android:orientation="vertical"
         >
+
         <!--Title-->
         <TextView
             android:id="@+id/textView"
@@ -21,7 +24,7 @@
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/textView2"
-                style="@style/dialog_lbl"
+                style="@style/dialog_text"
                 android:layout_weight="2"
                 android:text="Remote IP addr:" />
 
@@ -42,7 +45,7 @@
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/textView3"
-                style="@style/dialog_lbl"
+                style="@style/dialog_text"
                 android:layout_weight="2"
                 android:text="Remote IP port:" />
             <EditText
@@ -60,7 +63,7 @@
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/textView4"
-                style="@style/dialog_lbl"
+                style="@style/dialog_text"
                 android:text="Name:" />
             <EditText
                 android:id="@+id/server_name"
@@ -78,11 +81,17 @@
             <Button
                 android:id="@+id/bAdd"
                 style="@style/dialog_button"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="2dp"
+                app:cornerRadius="@dimen/dialog_corner"
                 android:text="Add" />
 
             <Button
                 android:id="@+id/bConnect"
                 style="@style/dialog_button"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="4dp"
+                app:cornerRadius="@dimen/dialog_corner"
                 android:text="Connect" />
         </LinearLayout>
 

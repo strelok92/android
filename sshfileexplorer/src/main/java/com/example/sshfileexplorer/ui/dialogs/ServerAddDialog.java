@@ -1,6 +1,8 @@
 package com.example.sshfileexplorer.ui.dialogs;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
@@ -32,6 +34,12 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_server_add_dialog, container, false);
+
+        try {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }catch (Exception e){
+            // todo add code
+        }
 
         // buttons
 

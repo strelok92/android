@@ -6,6 +6,12 @@
     <color name="dialog_bg">#FF050505</color>
     <color name="dialog_fg">#FF005117</color>
     <color name="dialog_txt">#FFFFFFFF</color>
-    <color name="dialog_entry">#FF506f59</color>
+<!--    <color name="dialog_entry">#FF506f59</color>-->
     <color name="dialog_err">#FFfa5625</color>
+
+    <color name="dialog_title">#FF005117</color>
+    <color name="dialog_background">#FF506f59</color>
+    <color name="dialog_button">#FF005117</color>
+    <color name="dialog_text">#FFFFFFFF</color>
+    <color name="dialog_entry">#7F005117</color>
 </resources>

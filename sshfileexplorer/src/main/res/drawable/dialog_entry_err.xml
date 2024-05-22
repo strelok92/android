@@ -6,4 +6,5 @@
         android:width="1dp"
         android:color="@color/dialog_err"
         />
+    <corners android:radius="@dimen/dialog_corner_entry" />
 </shape>

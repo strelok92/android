@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.dialogs.YesNoDialog">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.dialogs.YesNoDialog">
+
+
     <LinearLayout
         style="@style/dialog_frame"
         android:orientation="vertical">
 
-    <!--Title-->
+    <!-- Title -->
     <TextView
         android:id="@+id/titleYesNo"
-        style="@style/dialog_title"
-        android:text=""/>
+        style="@style/dialog_title" />
 
+        <!-- Message -->
         <TextView
             android:id="@+id/msgYesNo"
-            style="@style/dialog_lbl"
-            android:text="" />
+            style="@style/dialog_text" />
 
         <!--Buttons-->
         <LinearLayout
@@ -28,12 +30,16 @@
             <Button
                 android:id="@+id/bNo"
                 style="@style/dialog_button"
-                android:text="No" />
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="2dp"
+                app:cornerRadius="@dimen/dialog_corner" />
 
             <Button
                 android:id="@+id/bYes"
                 style="@style/dialog_button"
-                android:text="Yes" />
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="4dp"
+                app:cornerRadius="@dimen/dialog_corner" />
 
 
         </LinearLayout>
