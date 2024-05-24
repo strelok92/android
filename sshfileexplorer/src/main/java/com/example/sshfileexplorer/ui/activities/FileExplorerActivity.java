@@ -1,25 +1,19 @@
 package com.example.sshfileexplorer.ui.activities;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sshfileexplorer.R;
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
@@ -27,17 +21,11 @@ import com.jcraft.jsch.UserInfo;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class FileExplorerActivity extends AppCompatActivity {
     private final String SH_TYPE_SESSION = "session";
@@ -95,7 +83,8 @@ public class FileExplorerActivity extends AppCompatActivity {
                 try{
                     JSch jsch=new JSch();
                     String user = "user";
-                    String host = "192.168.135.134";
+//                    String host = "192.168.135.134";
+                    String host = "192.168.1.51";
                     String pass = "1234";
                     Session session = jsch.getSession(user, host, 22);
                     session.setPassword(pass);
@@ -123,15 +112,95 @@ public class FileExplorerActivity extends AppCompatActivity {
                             readerIn = new BufferedReader(new InputStreamReader(in)),
                             readerEr = new BufferedReader(new InputStreamReader(err));
 
-                    channel.setCommand("ls -l");
-                    channel.connect();
+                    channel.setCommand("ls -l --time-style=long-iso");
+//                    channel.connect();
 
                     // > drwxr-xr-x 2 user user 4096 May 15 20:34 Desktop
-                    // > -rw-r--r-- 1 user user    5 May 17 19:17 tmp.txt
+                    // > -rw-r--r-- 1 user user    5 2024-05-23 20:17 tmp.txt
                     // PARSE:
-                    //       d         rwx   r-x   r-x    2    user  user 4096  May 15 20:34  Desktop
-                    // (d)dir/(-)file ouner group other links ouner group size    date/time     name
+                    //       d         rwx   r-x   r-x    2    user  user 4096  2024-05-23 20:34  Desktop
+                    // (d)dir/(-)file owner group other links owner group size    date/time        name
 
+                    class FileProp{
+                        public final int TYPE_DIR = 0;
+                        public final int TYPE_FILE = 1;
+                        private int type;
+                        private int size;
+                        private String date, time, owner;
+
+                        FileProp(@NonNull String ld) throws Exception {
+                            // Prepare data array
+                            ArrayList<String> list = new ArrayList(Arrays.asList(ld.split(" ")));
+                            for (Iterator<String> it = list.iterator();it.hasNext();){
+                                String next = it.next();
+                                if (next.equals("")) it.remove();
+                            }
+
+                            // Parse data array
+
+                            // Type
+                            char fType = list.get(0).charAt(0);
+                            if (fType == 'd'){
+                                type = TYPE_DIR;
+                            }else if (fType == '-'){
+                                type = TYPE_FILE;
+                            }else{
+                                throw new Exception("ld parse error!");
+                            }
+
+                            // Permissions
+                            String permission = list.get(0);
+                            // ouner
+                            permission.charAt();
+                            // group
+
+                            // other
+
+                            // Size
+                            size = Integer.parseInt(list.get(4));
+
+                            // Date/Time
+                            date = list.get(5);
+                            time = list.get(6);
+                            owner = list.get(7);
+
+                        }
+
+                        public int getType(){return type;}
+                        public int getSize(){return size;}
+                        public String getOwner() {return owner;}
+                        public String getDate() {return date;}
+                        public String getTime() {return time;}
+                        public String getDateTime() {return date+" " +time;}
+
+
+                        //  todo add getPermissions                  file.getOwner(); // String []
+
+                    }
+
+//                    try {
+                        FileProp file = new FileProp("-rw-r--r-- 1 user user    5 2024-05-23 20:17 tmp.txt");
+
+                        int type = file.getType();
+                        int size = file.getSize();
+                        String name = file.getOwner();
+                        String date = file.getDate();
+                        String time = file.getTime();
+                        String datetime = file.getDateTime();
+
+
+                    Log.w(TAG,String.format("type %d size %d", type, size));
+                        Log.w(TAG,name);
+                    Log.w(TAG,date);
+                    Log.w(TAG,time);
+                    Log.w(TAG,datetime);
+
+
+
+
+//                    }catch (Exception e){
+//                        Log.e(TAG, e.toString());
+//                    }
 
                     String line;
                     while ((line = readerIn.readLine()) != null) {
