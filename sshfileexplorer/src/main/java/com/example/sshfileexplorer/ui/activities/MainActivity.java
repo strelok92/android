@@ -1,5 +1,6 @@
 package com.example.sshfileexplorer.ui.activities;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -20,6 +22,9 @@ import com.example.sshfileexplorer.ui.adapters.ServerListAdapter;
 import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import helpers.SSHHelper;
+import services.SSHService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,22 +70,39 @@ public class MainActivity extends AppCompatActivity {
         srvListAdapter = new ServerListAdapter(this);
 
 
+        // fixme {
+
+//        PendingIntent it;
+
+
+        Intent service = new Intent(this, SSHService.class);
+
+        service.putExtra("response", createPendingResult(0, getIntent(), 0));    // add for this.onActivityResult()
+
+        // }
+
         // todo read from base
 
-        srvListAdapter.addItem("Opange PI", "192.142.23.55:22");
-        srvListAdapter.addItem("Banana PI", "192.142.23.65:23");
-        srvListAdapter.addItem("Ubuntu SSH", "192.142.23.25:23");
+        srvListAdapter.addItem("Opange PI", "192.168.80.134:22");
+//        srvListAdapter.addItem("Banana PI", "192.142.23.65:23");
+//        srvListAdapter.addItem("Ubuntu SSH", "192.142.23.25:23");
 
         ListView srvListView = findViewById(R.id.serversList);
         srvListView.setAdapter(srvListAdapter);
         srvListView.setOnItemClickListener((parent, view, position, id) -> {
             String[] list = (String[]) srvListAdapter.getItem(position);
 
-            Log.d(TAG, String.format("%s (%s)", list[0], list[1]));
+            service.putExtra("host", "192.168.80.134");
+            service.putExtra("port", 22);
+            service.putExtra("timeout", 1000);
 
-            // todo open file system activity
-            Intent intent = new Intent(this, FileExplorerActivity.class);
-            startActivity(intent);
+            service.putExtra("login", "user");  // todo need to add
+            service.putExtra("pass", "1234");   // todo need to add
+
+            service.putExtra("cmd", "ls -l --time-style=long-iso");
+            startService(service);
+
+            Log.d(TAG, String.format("%s (%s)", list[0], list[1]));
 
         });
         srvListAdapter.setOnRemoveListener((parent, view, position, id) -> {
@@ -102,6 +124,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (resultCode){
+            case 0:         // Done
+                Log.i(TAG,"done");
+                // todo show File explorer
+
+
+                // todo open file system activity
+            Intent intent = new Intent(this, FileExplorerActivity.class);
+            startActivity(intent);
+                break;
+            case 1:         // Read data
+                try {
+                    SSHHelper.LSFile file = new SSHHelper.LSFile(data.getStringExtra("resp"));
+                    Log.i(TAG, String.format("%s %d", file.getName(), file.getType()));
+                } catch (Exception e) {}
+                break;
+            case -1:        // Server response error
+            case -2:        // SSH error
+                Log.e(TAG,String.format("%s", data.getStringExtra("resp")));
+                break;
+            default:        // Other error
+                break;
+        }
+    }
+
+
+
     public void addServer(String name, String ip_addr, String ip_port){
 
         // todo check is exist
@@ -109,5 +162,13 @@ public class MainActivity extends AppCompatActivity {
 
         srvListAdapter.addItem(name, ip_addr + ":"+ip_port);
         srvListAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent ssh = new Intent(this, SSHService.class);
+        stopService(ssh);
+        super.onDestroy();
     }
 }
