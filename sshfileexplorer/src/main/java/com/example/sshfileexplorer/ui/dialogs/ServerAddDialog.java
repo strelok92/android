@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.sshfileexplorer.R;
-import com.example.sshfileexplorer.ui.activities.MainActivity;
+import com.example.sshfileexplorer.ui.activities.ServerListActivity;
 
 public class ServerAddDialog extends DialogFragment implements View.OnClickListener {
 
@@ -72,13 +72,13 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
         }
 
         if (server_name.length() > 0){
-            ((MainActivity)serversListActivity).addServer(
+            ((ServerListActivity)serversListActivity).addServer(
                     server_name.getText().toString(),
                     ip_addr.getText().toString(),
                     ip_port.getText().toString()
             );
         }else{
-            ((MainActivity)serversListActivity).addServer(
+            ((ServerListActivity)serversListActivity).addServer(
                     ip_addr.getText().toString(),
                     ip_addr.getText().toString(),
                     ip_port.getText().toString()

@@ -67,6 +67,7 @@ public class ServerListAdapter extends BaseAdapter {
     }
     public void addItem(@NonNull String title,@NonNull String data){srvList.add(new String[]{title, data});}
     public void deleteItem(long id){srvList.remove((int)id);}
+    public void clear(){srvList.clear();}
     public void setOnRemoveListener(OnRemoveListener listener){
         removeListener = listener;
     }

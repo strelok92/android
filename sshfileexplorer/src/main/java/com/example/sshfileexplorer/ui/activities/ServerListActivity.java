@@ -1,6 +1,5 @@
 package com.example.sshfileexplorer.ui.activities;
 
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -26,7 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import helpers.SSHHelper;
 import services.SSHService;
 
-public class MainActivity extends AppCompatActivity {
+public class ServerListActivity extends AppCompatActivity {
 
     String TAG = "TAG SSH EXPLORER";
 
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         btnAddServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ServerAddDialog dialog = new ServerAddDialog(MainActivity.this);
+                ServerAddDialog dialog = new ServerAddDialog(ServerListActivity.this);
                 dialog.show(getSupportFragmentManager(), "");
             }
         });
@@ -69,14 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         srvListAdapter = new ServerListAdapter(this);
 
-
-        // fixme {
-
-//        PendingIntent it;
-
-
         Intent service = new Intent(this, SSHService.class);
-
         service.putExtra("response", createPendingResult(0, getIntent(), 0));    // add for this.onActivityResult()
 
         // }
@@ -123,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private Intent fExIntent = null;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -130,16 +123,17 @@ public class MainActivity extends AppCompatActivity {
 
         switch (resultCode){
             case 0:         // Done
-                Log.i(TAG,"done");
-                // todo show File explorer
-
-
-                // todo open file system activity
-            Intent intent = new Intent(this, FileExplorerActivity.class);
-            startActivity(intent);
+                if (fExIntent == null){
+                    fExIntent = new Intent(this, FileExplorerActivity.class);
+                }
+                startActivity(fExIntent);
                 break;
             case 1:         // Read data
                 try {
+                    if (fExIntent == null){
+                        fExIntent = new Intent(this, FileExplorerActivity.class);
+                    }
+//                    fExIntent.addItem();
                     SSHHelper.LSFile file = new SSHHelper.LSFile(data.getStringExtra("resp"));
                     Log.i(TAG, String.format("%s %d", file.getName(), file.getType()));
                 } catch (Exception e) {}

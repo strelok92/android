@@ -1,0 +1,79 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/dialog_entry"
+    >
+
+    <LinearLayout
+        style="@style/item_server_frame"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tFileName"
+            style="@style/item_server_title" />
+
+        <TextView
+            android:id="@+id/tFileInfo"
+            style="@style/item_server_info" />
+        <TextView
+            android:id="@+id/tFileSize"
+            style="@style/item_server_info" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:id="@+id/bFileDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@android:drawable/ic_menu_save"
+            android:layout_gravity="right|center"
+            android:layout_margin="10dp"
+            android:backgroundTint="#00FFFFFF"
+            />
+
+    </FrameLayout>
+
+</FrameLayout>
+
+<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    >-->
+
+<!--    <LinearLayout-->
+<!--        style="@style/srv_item_frame"-->
+<!--        android:orientation="vertical">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/tSrvItemTitle"-->
+<!--            style="@style/srv_item_title" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/tSrvItemAddr"-->
+<!--            style="@style/srv_item_addr" />-->
+
+<!--    </LinearLayout>-->
+
+<!--    <FrameLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/bSrvItemDel"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:srcCompat="@android:drawable/ic_delete"-->
+<!--            android:layout_gravity="right"-->
+
+<!--            />-->
+
+<!--    </FrameLayout>-->
+
+
+<!--</FrameLayout>-->

@@ -1,5 +1,6 @@
 package com.example.sshfileexplorer.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -8,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -34,6 +36,9 @@ import java.util.concurrent.Executors;
 
 import javax.security.auth.callback.Callback;
 
+import helpers.SSHHelper;
+import services.SSHService;
+
 public class FileExplorerActivity extends AppCompatActivity {
     String TAG = "TAG SSH EXPLORER";
 
@@ -49,6 +54,10 @@ public class FileExplorerActivity extends AppCompatActivity {
             return insets;
         });
 
+        Intent service = new Intent(this, SSHService.class);
+        service.putExtra("response", createPendingResult(0, getIntent(), 0));    // add for this.onActivityResult()
+
+
         String files[] = {".."};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, files);
@@ -57,8 +66,28 @@ public class FileExplorerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        Log.d(TAG, "onDestroy FileExplorerActivity");
-        super.onDestroy();
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (resultCode){
+            case 0:         // Done
+                Log.i(TAG,"done");
+                // todo update list
+                break;
+            case 1:         // Read data
+                try {
+                    // todo add to list
+                    SSHHelper.LSFile file = new SSHHelper.LSFile(data.getStringExtra("resp"));
+                    Log.i(TAG, String.format("%s %d", file.getName(), file.getType()));
+                } catch (Exception e) {}
+                break;
+            case -1:        // Server response error
+            case -2:        // SSH error
+                Log.e(TAG,String.format("%s", data.getStringExtra("resp")));
+                // fixme add disconnect process and return to main
+                break;
+            default:        // Other error
+                break;
+        }
     }
 }

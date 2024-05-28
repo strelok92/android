@@ -13,8 +13,8 @@ public class SSHHelper {
 //                    // PARSE:
 //                    //       d         rwx   r-x   r-x    2    user  user 4096  2024-05-23 20:34  Desktop
 //                    // (d)dir/(-)file owner group other links owner group size    date/time        name
-        public final int TYPE_DIR = 0;
-        public final int TYPE_FILE = 1;
+        public static final int TYPE_DIR = 0;
+        public static final int TYPE_FILE = 1;
         private int type;
         private int size;
         private String date, time, owner, name;

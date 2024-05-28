@@ -95,6 +95,8 @@ public class SSHService extends Service {
         super.onCreate();
         jsch=new JSch();
         executor = Executors.newSingleThreadExecutor();
+
+        Log.i(TAG,"onCreate SSHService");
     }
 
     private class SSHUserInfo implements UserInfo {
