@@ -8,7 +8,10 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.example.sshfileexplorer.R;
 
@@ -28,17 +31,14 @@ public class FileListAdapter extends BaseAdapter {
         list = new ArrayList<>();
     }
     @Override
-    public int getCount() { return list.size();}
+    public int getCount() {return list.size();}
     @Override
     public Object getItem(int position) {return list.get(position);}
     @Override
     public long getItemId(int position) {return position;}
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         // Create View
-
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_item_file, parent, false);
@@ -60,23 +60,21 @@ public class FileListAdapter extends BaseAdapter {
 
         // Update view
 
-        Button bFileDownload = view.findViewById(R.id.bFileDownload);
-        if (list.get(position).getType() == SSHHelper.LSFile.TYPE_FILE) {
+        ImageButton bFileDownload = view.findViewById(R.id.bFileDownload);
+//        if (list.get(position).getType() == SSHHelper.LSFile.TYPE_FILE) {
             bFileDownload.setVisibility(View.VISIBLE);
-        }else{
-            bFileDownload.setVisibility(View.INVISIBLE);
-        }
-        TextView text;
-        text = view.findViewById(R.id.tFileName);
-        text.setText(list.get(position).getName());
-        text = view.findViewById(R.id.tFileInfo);
-        text.setText(list.get(position).getDateTime());
-        text = view.findViewById(R.id.tFileSize);
-        text.setText(list.get(position).getSize());
+//        }else{
+//            bFileDownload.setVisibility(View.INVISIBLE);
+//        }
+        ((TextView)view.findViewById(R.id.tFileName)).setText(list.get(position).getName());
+        ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d", list.get(position).getSize()));
+        ((TextView)view.findViewById(R.id.tFileInfo)).setText(list.get(position).getDateTime());
+
         return view;
     }
 
-    public void setOnDownloadListener(OnListener onListener){
-        listener = onListener;
-    }
+    public void addItem(@NonNull SSHHelper.LSFile file){list.add(file);}
+    public void deleteItem(long id){list.remove((int)id);}
+    public void clear(){list.clear();}
+    public void setOnDownloadListener(OnListener onListener){listener = onListener;}
 }

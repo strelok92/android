@@ -17,6 +17,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sshfileexplorer.R;
+import com.example.sshfileexplorer.ui.adapters.FileListAdapter;
 import com.example.sshfileexplorer.ui.adapters.ServerListAdapter;
 import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
@@ -55,27 +56,19 @@ public class ServerListActivity extends AppCompatActivity {
         // "Add server" button
 
         FloatingActionButton btnAddServer = findViewById(R.id.btnAddServer);
-        btnAddServer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ServerAddDialog dialog = new ServerAddDialog(ServerListActivity.this);
-                dialog.show(getSupportFragmentManager(), "");
-            }
+        btnAddServer.setOnClickListener(v -> {
+            ServerAddDialog dialog = new ServerAddDialog(ServerListActivity.this);
+            dialog.show(getSupportFragmentManager(), "");
         });
 
 
         // Servers list
+        Intent service = new Intent(this, SSHService.class);
 
         srvListAdapter = new ServerListAdapter(this);
 
-        Intent service = new Intent(this, SSHService.class);
-        service.putExtra("response", createPendingResult(0, getIntent(), 0));    // add for this.onActivityResult()
-
-        // }
-
         // todo read from base
-
-        srvListAdapter.addItem("Opange PI", "192.168.80.134:22");
+        srvListAdapter.addItem("Opange PI", "192.168.168.134:22");
 //        srvListAdapter.addItem("Banana PI", "192.142.23.65:23");
 //        srvListAdapter.addItem("Ubuntu SSH", "192.142.23.25:23");
 
@@ -84,18 +77,18 @@ public class ServerListActivity extends AppCompatActivity {
         srvListView.setOnItemClickListener((parent, view, position, id) -> {
             String[] list = (String[]) srvListAdapter.getItem(position);
 
-            service.putExtra("host", "192.168.80.134");
+            Log.d(TAG, String.format("connect to %s (%s)", list[0], list[1]));
+
+            service.putExtra("host", "192.168.168.134");
             service.putExtra("port", 22);
             service.putExtra("timeout", 1000);
 
             service.putExtra("login", "user");  // todo need to add
             service.putExtra("pass", "1234");   // todo need to add
-
-            service.putExtra("cmd", "ls -l --time-style=long-iso");
             startService(service);
 
-            Log.d(TAG, String.format("%s (%s)", list[0], list[1]));
-
+            // Run file explorer activity and connect to remote SSH server
+            startActivity(new Intent(this, FileExplorerActivity.class));
         });
         srvListAdapter.setOnRemoveListener((parent, view, position, id) -> {
             YesNoDialog dialog = new YesNoDialog();
@@ -114,39 +107,6 @@ public class ServerListActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "");
         });
     }
-
-    private Intent fExIntent = null;
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (resultCode){
-            case 0:         // Done
-                if (fExIntent == null){
-                    fExIntent = new Intent(this, FileExplorerActivity.class);
-                }
-                startActivity(fExIntent);
-                break;
-            case 1:         // Read data
-                try {
-                    if (fExIntent == null){
-                        fExIntent = new Intent(this, FileExplorerActivity.class);
-                    }
-//                    fExIntent.addItem();
-                    SSHHelper.LSFile file = new SSHHelper.LSFile(data.getStringExtra("resp"));
-                    Log.i(TAG, String.format("%s %d", file.getName(), file.getType()));
-                } catch (Exception e) {}
-                break;
-            case -1:        // Server response error
-            case -2:        // SSH error
-                Log.e(TAG,String.format("%s", data.getStringExtra("resp")));
-                break;
-            default:        // Other error
-                break;
-        }
-    }
-
 
 
     public void addServer(String name, String ip_addr, String ip_port){
