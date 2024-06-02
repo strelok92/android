@@ -15,4 +15,5 @@
     <color name="item_background">#FF005117</color>
     <color name="item_title">#FFFFFFFF</color>
     <color name="item_text">#7FFFFFFF</color>
+    <color name="item_button">#7F506f59</color>
 </resources>

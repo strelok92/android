@@ -8,6 +8,8 @@
     <dimen name="dialog_text">18dp</dimen>
     <dimen name="dialog_button">18dp</dimen>
 
-    <dimen name="item_title">24dp</dimen>
-    <dimen name="item_text">16dp</dimen>
+<!--    <dimen name="item_title">24dp</dimen>-->
+    <dimen name="item_title">20dp</dimen>
+    <dimen name="item_text">12dp</dimen>
+    <dimen name="item_corner">3dp</dimen>
 </resources>

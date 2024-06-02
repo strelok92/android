@@ -61,15 +61,26 @@ public class FileListAdapter extends BaseAdapter {
         // Update view
 
         ImageButton bFileDownload = view.findViewById(R.id.bFileDownload);
-//        if (list.get(position).getType() == SSHHelper.LSFile.TYPE_FILE) {
+        if (list.get(position).getType() == SSHHelper.LSFile.TYPE_FILE) {
             bFileDownload.setVisibility(View.VISIBLE);
-//        }else{
-//            bFileDownload.setVisibility(View.INVISIBLE);
-//        }
+            view.findViewById(R.id.iFile).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.iFolder).setVisibility(View.GONE);
+        }else{
+            bFileDownload.setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.iFile).setVisibility(View.GONE);
+            view.findViewById(R.id.iFolder).setVisibility(View.VISIBLE);
+        }
         ((TextView)view.findViewById(R.id.tFileName)).setText(list.get(position).getName());
-        ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d", list.get(position).getSize()));
-        ((TextView)view.findViewById(R.id.tFileInfo)).setText(list.get(position).getDateTime());
-
+        int size = list.get(position).getSize();
+        if (size < 1024){
+            ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d b", size));
+        }else if (size < 1024*1024){
+            ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d Kb", size/1024));
+        }else if (size < 1024*1024*1024){
+            ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d Mb", size/(1024*1024)));
+        }else{
+            ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d Gb", size/(1024*1024*1024)));
+        }
         return view;
     }
 

@@ -8,14 +8,11 @@
     android:background="@color/dialog_background"
     tools:context=".ui.activities.FileExplorerActivity">
 
-
         <ListView
             android:id="@+id/filesList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:divider="@color/item_text"
-            android:dividerHeight="1dp"
             />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -79,7 +79,7 @@ public class ServerListActivity extends AppCompatActivity {
 
             Log.d(TAG, String.format("connect to %s (%s)", list[0], list[1]));
 
-            service.putExtra("host", "192.168.168.134");
+            service.putExtra("host", "192.168.73.134");
             service.putExtra("port", 22);
             service.putExtra("timeout", 1000);
 
@@ -107,7 +107,6 @@ public class ServerListActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "");
         });
     }
-
 
     public void addServer(String name, String ip_addr, String ip_port){
 

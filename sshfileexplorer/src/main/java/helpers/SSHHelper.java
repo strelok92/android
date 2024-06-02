@@ -1,12 +1,91 @@
 package helpers;
 
+import android.app.Activity;
+import android.content.Intent;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import services.SSHService;
+
 public class SSHHelper {
+    public interface Listener{void onListener(int cmd, int code, Object data);}
+    public interface InitListener{void onInit(String path);}
+    String TAG = "TAG SSH EXPLORER";
+    private static final Integer CMD_PWD = 0;
+    public static final Integer CMD_LS = 1;
+    public static final Integer CMD_CD = 2;
+
+    public static final Integer CODE_COMPLETE = 0;
+    public static final Integer CODE_DATA = 1;
+    public static final Integer CODE_ERROR = -1;
+    private String path=null;
+    private Listener listener = null;
+    private InitListener init;
+    private Intent service;
+    private Activity activity;
+    public SSHHelper(Activity act, InitListener init){
+        this.init = init;
+        activity = act;
+        service = new Intent(activity, SSHService.class);
+    }
+
+    public void start(){
+        service.putExtra("response", activity.createPendingResult(CMD_PWD, activity.getIntent(), 0));
+        service.putExtra("cmd", "pwd");
+        activity.startService(service);
+    }
+    public void stop(){
+        activity.stopService(service);
+    }
+
+    public void ls(){
+        service.putExtra("response", activity.createPendingResult(CMD_LS, activity.getIntent(), 0));
+        service.putExtra("cmd", "ls " + path + " -l --time-style=long-iso");
+        activity.startService(service);
+    }
+    public void cd(String dir){
+        service.putExtra("response", activity.createPendingResult(CMD_CD, activity.getIntent(), 0));
+        service.putExtra("cmd", "cd " + path + "/"+ dir + " && pwd");
+        activity.startService(service);
+    }
+    public void setOnListener(Listener listener){
+        this.listener = listener;
+    }
+    public void onResult(int req, int rsp, Intent data){
+        // Init
+        if (req == CMD_PWD){
+            if (rsp == SSHService.RSP_SERVER_CMD_ACK) {
+                path = data.getStringExtra("resp");
+                if (init != null) init.onInit(path);
+            }
+        }
+        // Check on error
+        if (listener == null) return;
+        if (rsp == SSHService.RSP_SERVER_CMD_NACK) {
+            listener.onListener(CMD_LS, CODE_ERROR, data.getStringExtra("resp"));
+            return;
+        }
+        // Commands
+        if (req == CMD_LS){
+            if (rsp == SSHService.RSP_SERVER_CMD_ACK) {
+                listener.onListener(CMD_LS, CODE_DATA, data.getStringExtra("resp"));
+            } else if (rsp == SSHService.RSP_SERVER_CMD_DONE) {
+                listener.onListener(CMD_LS, CODE_COMPLETE, null);
+            }
+        }else if (req == CMD_CD){
+            if (rsp == SSHService.RSP_SERVER_CMD_ACK) {
+                path = data.getStringExtra("resp");
+                listener.onListener(CMD_CD, CODE_DATA, "");
+            } else if (rsp == SSHService.RSP_SERVER_CMD_DONE) {
+                listener.onListener(CMD_CD, CODE_COMPLETE, "");
+            }
+        }
+    }
+
     public static class LSFile{
         //                    // > drwxr-xr-x 2 user user 4096 May 15 20:34 Desktop
 //                    // > -rw-r--r-- 1 user user    5 2024-05-23 20:17 tmp.txt

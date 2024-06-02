@@ -24,7 +24,6 @@ public class SSHService extends Service {
     public static final int RSP_SERVER_CMD_NACK = -1;
     public static final int RSP_SERVER_CMD_DONE = 0;
     public static final int RSP_SERVER_CMD_ACK = 1;
-
     private JSch jsch;
     private ExecutorService executor;
     private Session session = null;
@@ -71,7 +70,6 @@ public class SSHService extends Service {
             // Open session
             try {
                 if (session.isConnected() == false) {
-                    Log.i(TAG, "Open session..");
                     Integer timeout = intent.getIntExtra("timeout", 30000);
                     session.connect(timeout);
                 }
@@ -84,28 +82,18 @@ public class SSHService extends Service {
                 }
                 return;
             }
-
             // Send command
 
             String cmd = intent.getStringExtra("cmd");
             if (cmd == null) return;
-
-            Log.d(TAG, cmd);
-
             try {
-                if (channel == null){
-                    channel = (ChannelExec) session.openChannel("exec"); // "shell", "exec", "x11", "sftp"
-                }
+                String line;
+
+                channel = (ChannelExec) session.openChannel("exec"); // "shell", "exec", "x11", "sftp"
 
                 final BufferedReader
                         readerInput = new BufferedReader(new InputStreamReader(channel.getInputStream())),
                         readerError = new BufferedReader(new InputStreamReader(channel.getErrStream()));
-
-                String line;
-
-                if (channel.isConnected()){
-                    Log.i(TAG, "CONNECTED");
-                }
 
                 channel.setCommand(cmd);
                 channel.connect();
@@ -138,8 +126,6 @@ public class SSHService extends Service {
         super.onCreate();
         jsch = new JSch();
         executor = Executors.newSingleThreadExecutor();
-
-        Log.i(TAG,"onCreate SSHService");
     }
 
     private class SSHUserInfo implements UserInfo {
