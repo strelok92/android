@@ -16,10 +16,12 @@
 
         <activity
             android:name=".ui.activities.FileExplorerActivity"
+            android:configChanges="screenSize|orientation"
             android:exported="false" />
         <activity
             android:name=".ui.activities.ServerListActivity"
             android:exported="true"
+            android:configChanges="screenSize|orientation"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
