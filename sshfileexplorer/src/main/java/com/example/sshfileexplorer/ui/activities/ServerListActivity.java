@@ -5,11 +5,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -17,13 +15,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sshfileexplorer.R;
-import com.example.sshfileexplorer.ui.adapters.FileListAdapter;
 import com.example.sshfileexplorer.ui.adapters.ServerListAdapter;
 import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import helpers.SSHHelper;
 import services.SSHService;
 
 public class ServerListActivity extends AppCompatActivity {
@@ -35,7 +31,7 @@ public class ServerListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_server_list);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -43,14 +39,14 @@ public class ServerListActivity extends AppCompatActivity {
         });
 
         // title bar
-
-        try {
-            ActionBar bar = getSupportActionBar();
-//            bar.setBackgroundDrawable(new ColorDrawable(getColor(R.color.dialog_fg)));
-            bar.setTitle("Select server");
-        }catch (Exception e){
-            // No action bar, nothing modify
-        }
+//        try {
+//            ActionBar bar = getSupportActionBar();
+////            bar.setBackgroundDrawable(new ColorDrawable(getColor(R.color.dialog_fg)));
+//            bar.setTitle("Select server");
+//        }catch (Exception e){
+//            // No action bar, nothing modify
+//        }
+//
         this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // for background and corner support
 
         // "Add server" button
@@ -61,16 +57,13 @@ public class ServerListActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "");
         });
 
-
         // Servers list
         Intent service = new Intent(this, SSHService.class);
 
         srvListAdapter = new ServerListAdapter(this);
 
         // todo read from base
-        srvListAdapter.addItem("Opange PI", "192.168.168.134:22");
-//        srvListAdapter.addItem("Banana PI", "192.142.23.65:23");
-//        srvListAdapter.addItem("Ubuntu SSH", "192.142.23.25:23");
+        srvListAdapter.addItem("user", "192.168.168.134");
 
         ListView srvListView = findViewById(R.id.serversList);
         srvListView.setAdapter(srvListAdapter);
@@ -79,7 +72,7 @@ public class ServerListActivity extends AppCompatActivity {
 
             Log.d(TAG, String.format("connect to %s (%s)", list[0], list[1]));
 
-            service.putExtra("host", "192.168.73.134");
+            service.putExtra("host", "192.168.147.134");
             service.putExtra("port", 22);
             service.putExtra("timeout", 1000);
 
@@ -89,6 +82,12 @@ public class ServerListActivity extends AppCompatActivity {
 
             // Run file explorer activity and connect to remote SSH server
             startActivity(new Intent(this, FileExplorerActivity.class));
+        });
+        srvListAdapter.setOnEditListener((parent, view, position, id) -> {
+            ServerAddDialog dialog = new ServerAddDialog(ServerListActivity.this);
+//            dialog.
+            // fixme filling dialog data + add API
+            dialog.show(getSupportFragmentManager(), "");
         });
         srvListAdapter.setOnRemoveListener((parent, view, position, id) -> {
             YesNoDialog dialog = new YesNoDialog();

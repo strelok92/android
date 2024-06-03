@@ -15,4 +15,19 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom|center"
+            >
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnExit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    app:srcCompat="@drawable/baseline_exit_to_app_32"
+                    android:layout_margin="10dp"
+                    android:backgroundTint="@color/colorPrimary" />
+        </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

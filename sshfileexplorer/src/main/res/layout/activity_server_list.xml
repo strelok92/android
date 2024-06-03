@@ -18,7 +18,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom|right"
+        android:gravity="bottom|center"
         >
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             app:srcCompat="@android:drawable/ic_input_add"
-            android:layout_margin="30dp"
+            android:layout_margin="10dp"
             android:backgroundTint="@color/colorPrimary" />
     </RelativeLayout>
 

@@ -17,11 +17,6 @@
             style="@style/dialog_title"
             android:text="Add SSH server"/>
 
-<!--        <TextView-->
-<!--            android:id="@+id/textView"-->
-<!--            style="@style/dialog_title"-->
-<!--            android:text="Add SSH server"/>-->
-
         <!--Enter Addr-->
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,15 +27,12 @@
                 style="@style/dialog_text"
                 android:layout_weight="2"
                 android:text="Remote IP addr:" />
-
-
             <EditText
                 android:id="@+id/ip_addr"
                 style="@style/dialog_entry"
                 android:inputType="numberDecimal"
                 android:digits="0123456789."
                 android:text="192.168.0.1" />
-
         </LinearLayout>
 
         <!--Enter Port-->
@@ -61,7 +53,7 @@
                 android:text="22" />
         </LinearLayout>
 
-        <!--Enter Name-->
+        <!--Enter Login-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -70,12 +62,39 @@
                 android:id="@+id/textView4"
                 style="@style/dialog_text"
                 android:layout_weight="2"
-                android:text="Name:" />
+                android:text="Login:" />
             <EditText
-                android:id="@+id/server_name"
-                style="@style/dialog_entry"
+                android:id="@+id/server_login"
+                style="@style/dialog_entry_err"
                 android:inputType="text"
                 android:text="" />
+        </LinearLayout>
+
+        <!--Enter Pass-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/textView8"
+                style="@style/dialog_text"
+                android:layout_weight="2"
+                android:text="Password:" />
+            <EditText
+                android:id="@+id/server_pass"
+                style="@style/dialog_entry_err"
+                android:inputType="text"
+                android:text="" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <CheckBox
+                android:id="@+id/save_pass"
+                style="@style/dialog_check"
+                android:checked="true"
+                android:text="save password" />
         </LinearLayout>
 
         <!--Buttons-->

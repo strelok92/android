@@ -2,13 +2,15 @@
 <resources>
 
     <!-- Theme -->
-    <color name="colorPrimary">#FF0042ff</color>
-    <color name="colorOnPrimary">#FFb3c7ff</color>
+    <color name="colorPrimary">#FFF2BDBD</color>        <!-- Title + buttons -->
+    <color name="colorOnPrimary">#FF000000</color>      <!-- Selected buttons -->
+    <color name="colorSecondary">#FF000000</color>      <!-- Cursor -->
 
     <!-- App -->
-    <color name="colorText">#FFFFFFFF</color>
-    <color name="colorEntry">#7Fb3c7ff</color>
-    <color name="colorBackground">#FF001756</color>
-    <color name="colorIcon">#FF0042ff</color>
+    <color name="colorText">#FF000000</color>
+    <color name="colorEntry">#FFFFE2E2</color>
+    <color name="colorBackground">#FFFFFFFF</color>
+    <color name="colorIcon">#FF000000</color>
     <color name="colorIconBackground">#00FFFFFF</color>
+
 </resources>

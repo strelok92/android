@@ -1,14 +1,18 @@
 package com.example.sshfileexplorer.ui.dialogs;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +26,7 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
 
     String TAG = "TAG SSH EXPLORER";
 
-    private EditText ip_addr, ip_port, server_name;
+    private EditText ip_addr, ip_port, login, pass;
 
     private Activity serversListActivity;
     public ServerAddDialog(Activity activity){
@@ -32,6 +36,7 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.dialog_server_add, container, false);
 
         try {
@@ -49,12 +54,15 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
 
         ip_addr = (EditText)view.findViewById(R.id.ip_addr);
         ip_addr.addTextChangedListener(new EntryValidator(ip_addr));
-//        ip_addr.setBackgroundResource(R.drawable.dialog_entry_err);
 
         ip_port = (EditText)view.findViewById(R.id.ip_port);
         ip_port.addTextChangedListener(new EntryValidator(ip_port));
 
-        server_name = (EditText)view.findViewById(R.id.server_name);
+        login = (EditText)view.findViewById(R.id.server_login);
+        login.addTextChangedListener(new EntryValidator(login));
+
+        pass = (EditText)view.findViewById(R.id.server_pass);
+        pass.addTextChangedListener(new EntryValidator(pass));
 
         return view;
     }
@@ -70,10 +78,14 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
             Toast.makeText(getContext(), "IP port is incorrect!", Toast.LENGTH_SHORT).show();
             return;
         }
+        if ((login.length() == 0)||(pass.length() == 0)){
+            Toast.makeText(getContext(), "Login data incorrect!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        if (server_name.length() > 0){
+        if (login.length() > 0){
             ((ServerListActivity)serversListActivity).addServer(
-                    server_name.getText().toString(),
+                    login.getText().toString(),
                     ip_addr.getText().toString(),
                     ip_port.getText().toString()
             );
@@ -90,8 +102,6 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
         }
         dismiss();
     }
-
-
     private class EntryValidator implements TextWatcher {
         private EditText entry;
         EntryValidator(EditText view){entry = view;}

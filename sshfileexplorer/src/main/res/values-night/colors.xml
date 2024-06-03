@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Theme -->
+    <color name="colorPrimary">#FF793E3E</color>        <!-- Title + buttons -->
+    <color name="colorOnPrimary">#FFFFFFFF</color>      <!-- Selected buttons -->
+    <color name="colorSecondary">#FFFFFFFF</color>      <!-- Cursor -->
+
+    <!-- App -->
+    <color name="colorText">#FFFFFFFF</color>
+    <color name="colorEntry">#FF794545</color>
+    <color name="colorBackground">#FF3F1515</color>
+    <color name="colorIcon">#FFFFFFFF</color>
+    <color name="colorIconBackground">#00FFFFFF</color>
+    
+</resources>

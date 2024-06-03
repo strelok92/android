@@ -41,6 +41,17 @@
         <item name="android:gravity">left</item>
     </style>
 
+    <style name="dialog_entry_err" parent="dialog_entry">
+        <item name="android:background">@drawable/dialog_entry_err</item>
+    </style>
+
+    <style name="dialog_check" parent="Base.Theme.App">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/dimTextBig</item>
+        <item name="android:gravity">left</item>
+    </style>
+
     <style name="dialog_button" parent="Base.Theme.App">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -62,10 +73,14 @@
 
     <style name="item_title" parent="dialog_title">
         <item name="android:gravity">left</item>
+        <item name="android:background"></item>
     </style>
 
     <style name="item_text" parent="dialog_text">
         <item name="android:gravity">left</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
 
     </style>
 

@@ -4,8 +4,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>          <!-- Button color -->
         <item name="colorOnPrimary">@color/colorOnPrimary</item>        <!-- Button Click color -->
 
-        <item name="colorSecondary">@color/colorPrimary</item>        <!-- Cursor color -->
-        <item name="colorOnSecondary">@color/colorOnPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>        <!-- Cursor color -->
+        <item name="colorOnSecondary">@color/colorSecondary</item>
 
     </style>
 

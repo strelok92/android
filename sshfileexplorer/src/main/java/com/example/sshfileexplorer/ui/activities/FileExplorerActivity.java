@@ -17,6 +17,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sshfileexplorer.R;
 import com.example.sshfileexplorer.ui.adapters.FileListAdapter;
+import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
+import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import helpers.SSHHelper;
 
@@ -34,6 +37,22 @@ public class FileExplorerActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        FloatingActionButton btnExit = findViewById(R.id.btnExit);
+        btnExit.setOnClickListener(v -> {
+            YesNoDialog dialog = new YesNoDialog();
+            dialog.setTitle("Remove SSH server");
+            dialog.setMessage("Disconnect?");
+
+            dialog.setButtonYes("Yes", view -> {
+                ssh.stop();
+                this.finish();
+                dialog.dismiss();
+            });
+            dialog.setButtonNo("No", view -> dialog.dismiss());
+
+            dialog.show(getSupportFragmentManager(), "");
         });
 
         ssh = new SSHHelper(this, (path)->{ssh.ls();});
@@ -61,6 +80,7 @@ public class FileExplorerActivity extends AppCompatActivity {
 
         // Init adapter
         listAdapter = new FileListAdapter(this);
+        // fixme need to add
 //        listAdapter.setOnDownloadListener((parent, view, position, id)->{
 //            FileListAdapter adapter = (FileListAdapter)parent.getAdapter();
 //            SSHHelper.LSFile file = (SSHHelper.LSFile)adapter.getItem(position);
@@ -77,6 +97,7 @@ public class FileExplorerActivity extends AppCompatActivity {
                 ssh.cd(file.getName());
             }
         });
+
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {

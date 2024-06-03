@@ -15,12 +15,13 @@ import com.example.sshfileexplorer.R;
 import java.util.ArrayList;
 
 public class ServerListAdapter extends BaseAdapter {
-    public interface OnRemoveListener {void onItemRemove(AdapterView<?> parent, View view, int position, long id);}
+    public interface OnListener {void onEvent(AdapterView<?> parent, View view, int position, long id);}
     String TAG = "TAG SSH EXPLORER";
 
     private LayoutInflater lInflater;
     private ArrayList<String[]> srvList;
-    private OnRemoveListener removeListener = null;
+    private OnListener removeListener = null;
+    private OnListener editListener = null;
 
     public ServerListAdapter(Context ctx){
         lInflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -48,11 +49,17 @@ public class ServerListAdapter extends BaseAdapter {
                     listener.onItemClick((AdapterView) parent, v, position, position);
                 }
             });
+            // Edit item listener
+            view.findViewById(R.id.bSrvItemEdit).setOnClickListener(v -> {
+                if (editListener != null){
+                    editListener.onEvent((AdapterView) parent, v, position, position);
+                }
+            });
 
             // Remove item listener
             view.findViewById(R.id.bSrvItemDel).setOnClickListener(v -> {
                 if (removeListener != null){
-                    removeListener.onItemRemove((AdapterView) parent, v, position, position);
+                    removeListener.onEvent((AdapterView) parent, v, position, position);
                 }
             });
         }
@@ -60,16 +67,19 @@ public class ServerListAdapter extends BaseAdapter {
         // Update item data on the View
         String[] item = srvList.get(position);
 
-        ((TextView)view.findViewById(R.id.tSrvItemTitle)).setText(item[0]);
-        ((TextView)view.findViewById(R.id.tSrvItemAddr)).setText(item[1]);
+        ((TextView)view.findViewById(R.id.tServerLogin)).setText(item[0]);
+        ((TextView)view.findViewById(R.id.tServerIP)).setText(item[1]);
 
         return view;
     }
     public void addItem(@NonNull String title,@NonNull String data){srvList.add(new String[]{title, data});}
     public void deleteItem(long id){srvList.remove((int)id);}
     public void clear(){srvList.clear();}
-    public void setOnRemoveListener(OnRemoveListener listener){
+    public void setOnRemoveListener(OnListener listener){
         removeListener = listener;
+    }
+    public void setOnEditListener(OnListener listener){
+        editListener = listener;
     }
 }
 
