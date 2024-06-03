@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">SSHFileExplorer</string>
-    <string name="dialog_yes">yes</string>
-    <string name="dialog_no">no</string>
+<!--    <string name="dialog_yes">yes</string>-->
+<!--    <string name="dialog_no">no</string>-->
 </resources>

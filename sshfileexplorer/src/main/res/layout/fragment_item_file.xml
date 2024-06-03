@@ -2,7 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/dialog_entry"
     >
 
     <LinearLayout
@@ -15,6 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone"
+            android:backgroundTint="@color/colorIconBackground"
             app:srcCompat="@drawable/baseline_folder_32" />
 
         <ImageView
@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone"
+            android:backgroundTint="@color/colorIconBackground"
             app:srcCompat="@drawable/baseline_text_snippet_32" />
 
         <LinearLayout
@@ -31,10 +32,10 @@
 
             <TextView
                 android:id="@+id/tFileName"
-                style="@style/item_file_name" />
+                style="@style/item_title" />
             <TextView
                 android:id="@+id/tFileSize"
-                style="@style/item_file_info" />
+                style="@style/item_text" />
 
         </LinearLayout>
     </LinearLayout>
@@ -50,7 +51,7 @@
             app:srcCompat="@drawable/baseline_download_32"
             android:layout_gravity="right|center"
             android:layout_margin="10dp"
-            android:backgroundTint="@color/item_button"
+            android:backgroundTint="@color/colorIconBackground"
             />
 
     </FrameLayout>

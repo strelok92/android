@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--  shape  -->
-    <dimen name="dialog_corner">10dp</dimen>
-    <dimen name="dialog_corner_entry">5dp</dimen>
-    <!--  text  -->
-    <dimen name="dialog_title">20dp</dimen>
-    <dimen name="dialog_text">18dp</dimen>
-    <dimen name="dialog_button">18dp</dimen>
+    <!--  Corner -->
+    <dimen name="dimCornerBig">10dp</dimen>
+    <dimen name="dimCornerMid">5dp</dimen>
+    <dimen name="dimCornerSmall">2dp</dimen>
 
-<!--    <dimen name="item_title">24dp</dimen>-->
-    <dimen name="item_title">20dp</dimen>
-    <dimen name="item_text">12dp</dimen>
-    <dimen name="item_corner">3dp</dimen>
+    <!--  text  -->
+    <dimen name="dimTextBig">20dp</dimen>
+    <dimen name="dimTextMid">18dp</dimen>
+    <dimen name="dimTextSmall">12dp</dimen>
+
 </resources>

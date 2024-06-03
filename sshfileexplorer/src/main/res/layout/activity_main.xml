@@ -5,16 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dialog_background"
+    android:background="@color/colorBackground"
     tools:context=".ui.activities.ServerListActivity">
 
     <ListView
         android:id="@+id/serversList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:divider="@color/item_text"
+        android:divider="@color/colorBackground"
         />
 
     <RelativeLayout
@@ -23,7 +21,6 @@
         android:gravity="bottom|right"
         >
 
-
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnAddServer"
             android:layout_width="wrap_content"
@@ -31,8 +28,7 @@
             android:clickable="true"
             app:srcCompat="@android:drawable/ic_input_add"
             android:layout_margin="30dp"
-            android:backgroundTint="@color/dialog_button"
-            tools:ignore="MissingConstraints" />
+            android:backgroundTint="@color/colorPrimary" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

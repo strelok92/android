@@ -2,7 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:backgroundTint="@color/dialog_entry"
     >
 
     <LinearLayout
@@ -11,11 +10,11 @@
 
         <TextView
             android:id="@+id/tSrvItemTitle"
-            style="@style/item_server_title" />
+            style="@style/item_title" />
 
         <TextView
             android:id="@+id/tSrvItemAddr"
-            style="@style/item_server_info" />
+            style="@style/item_text" />
 
     </LinearLayout>
 
@@ -27,50 +26,12 @@
             android:id="@+id/bSrvItemDel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@android:drawable/ic_delete"
+            app:srcCompat="@drawable/baseline_delete_forever_32"
             android:layout_gravity="right|center"
             android:layout_margin="10dp"
-            android:backgroundTint="#00FFFFFF"
+            android:backgroundTint="@color/colorIconBackground"
             />
 
     </FrameLayout>
 
 </FrameLayout>
-
-<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    >-->
-
-<!--    <LinearLayout-->
-<!--        style="@style/srv_item_frame"-->
-<!--        android:orientation="vertical">-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/tSrvItemTitle"-->
-<!--            style="@style/srv_item_title" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/tSrvItemAddr"-->
-<!--            style="@style/srv_item_addr" />-->
-
-<!--    </LinearLayout>-->
-
-<!--    <FrameLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
-
-<!--        <ImageButton-->
-<!--            android:id="@+id/bSrvItemDel"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:srcCompat="@android:drawable/ic_delete"-->
-<!--            android:layout_gravity="right"-->
-
-<!--            />-->
-
-<!--    </FrameLayout>-->
-
-
-<!--</FrameLayout>-->
