@@ -20,6 +20,7 @@ import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import helpers.DBHelper;
 import services.SSHService;
 
 public class ServerListActivity extends AppCompatActivity {
@@ -37,6 +38,12 @@ public class ServerListActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+
+        Log.w(TAG, getApplicationInfo().dataDir);
+
+        DBHelper db = new DBHelper(this, "tst.db");
+        db.open();
 
         // title bar
 //        try {
