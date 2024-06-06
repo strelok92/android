@@ -20,6 +20,9 @@ import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import helpers.DBHelper;
 import services.SSHService;
 
@@ -40,10 +43,39 @@ public class ServerListActivity extends AppCompatActivity {
         });
 
 
-        Log.w(TAG, getApplicationInfo().dataDir);
+        DBHelper db = new DBHelper(this, "srv.db");
+//        db.clear();
 
-        DBHelper db = new DBHelper(this, "tst.db");
-        db.open();
+        try {
+            Map item = new HashMap();
+
+            for (int i=0;i<5;i++){
+                item.put("host", "host"+Integer.toString(i));
+                item.put("port", 22);
+                item.put("login", "log"+Integer.toString(i));
+                item.put("pass", "pass"+Integer.toString(i));
+                db.addItem(item);
+                item.clear();
+            }
+
+            db.deleteItem(2);
+
+            int size = db.size();
+
+            Log.i(TAG, String.format("siz %d", size));
+
+            for (int i=0;i<size;i++){
+                item = db.getItem(db.getItemId(i));
+
+                if (item.size() > 0){
+                    Log.i(TAG, String.format("%d: %s %d",i, (String)item.get("host"), (int)item.get("port")));
+                }
+            }
+
+
+        }catch (Exception e){
+            Log.e(TAG, e.toString());
+        }
 
         // title bar
 //        try {

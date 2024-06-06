@@ -14,10 +14,13 @@ import com.example.sshfileexplorer.R;
 
 import java.util.ArrayList;
 
+import helpers.DBHelper;
+
 public class ServerListAdapter extends BaseAdapter {
     public interface OnListener {void onEvent(AdapterView<?> parent, View view, int position, long id);}
     String TAG = "TAG SSH EXPLORER";
 
+    private DBHelper db;
     private LayoutInflater lInflater;
     private ArrayList<String[]> srvList;
     private OnListener removeListener = null;
@@ -26,6 +29,8 @@ public class ServerListAdapter extends BaseAdapter {
     public ServerListAdapter(Context ctx){
         lInflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         srvList = new ArrayList<>();
+        db = new DBHelper(ctx, "servers.db");
+        db.clear();
     }
     @Override
     public int getCount() {return srvList.size();}

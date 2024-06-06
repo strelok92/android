@@ -2,6 +2,7 @@ package helpers;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,23 +10,23 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DBHelper {
     String TAG = "TAG SSH EXPLORER";
-    private String dbName;
-    private SQLiteDatabase db = null;
+    private SQLiteDatabase db;
     public DBHelper(Context ctx, String name){
-        dbName = ctx.getApplicationInfo().dataDir + File.separator + dbName;
-    }
-    public void open(){
-        if (db.isOpen()){ return;}
-
+        // Open DB
         try {
-            // Open DB
-            db = SQLiteDatabase.openOrCreateDatabase(dbName, null);
-           // Create table
+            db = SQLiteDatabase.openOrCreateDatabase(
+                    ctx.getApplicationInfo().dataDir + File.separator + name,
+                    null
+            );
             if (db.isOpen()) {
                 db.execSQL("create table if not exists servers (id integer, host text, port integer, login text, pass text)");
             }
@@ -34,47 +35,77 @@ public class DBHelper {
         }
     }
 
-    public int addItem(String host, Integer port, String login, String pass){
+    @SuppressLint("Range")
+    public int addItem(@NonNull Map item){
+        String host = (String)item.get("host");
+        Integer port = (Integer)item.get("port");
+        String login = (String)item.get("login");
+        String pass = (String)item.get("pass");
         int id = -1;
         if (db.isOpen()){
-
             Cursor query = db.rawQuery("select * from servers", null);
-
-            id = query.getCount() + 1;
+            id = query.getCount();
             if (pass == null) pass = "";
-
-            db.execSQL(String.format("insert into servers values (%d, %s, %d, %s, %s)", id, host, port, login, pass));
+            db.execSQL(String.format("insert into servers values (%d, '%s', %d, '%s', '%s')", id, host, port, login, pass));
         }
         return id;
     }
+    public int getItemId(int pos){
+        int ret = -1;
+        if (db.isOpen()) {
+            Cursor query = db.rawQuery("select * from servers ", null);
+            if (query.getCount() <= pos){
+                return ret;
+            }
+            try{
+                query.moveToPosition(pos);
+                ret = query.getInt(0);
+            }catch (Exception e){ Log.e(TAG, e.toString()); }
+            query.close();
+        }
+        return ret;
+    }
+    public Map getItem(int id){
+        Map item = new HashMap();
 
+        if (db.isOpen()) {
+            Cursor query = db.rawQuery(String.format("select * from servers where id=%d", id), null);
+
+            if (query.getCount() != 1){
+                query.close();
+                return item;
+            }
+
+            try {
+                query.moveToFirst();
+                item.put("host", query.getString(1));
+                item.put("port", query.getInt(2));
+                item.put("login", query.getString(3));
+                item.put("pass", query.getString(4));
+            } catch (Exception e) { Log.e(TAG, e.toString()); }
+            query.close();
+        }
+        return item;
+    }
     public void deleteItem(int id){
         if (db.isOpen()){
             db.execSQL(String.format("delete from servers where id like %d", id));
         }
     }
-
-    public void getItem(int id){
+    public int size(){
+        int ret = 0;
         if (db.isOpen()){
-            // Read
             Cursor query = db.rawQuery("select * from servers", null);
 
-//            Log.i(TAG, String.format("%d", query.getCount()));
-//
-//            while (query.moveToNext()){
-//                String name = query.getString(0);
-//                int age = query.getInt(1);
-//                Log.i(TAG, String.format("%s, %d", name, age));
-//            }
-//
-
+            ret = query.getCount();
             query.close();
         }
+        return ret;
     }
 
-    public void close(){
+    public void clear(){
         if (db.isOpen()){
-            db.close();
+            db.execSQL("delete from servers");
         }
     }
 }
