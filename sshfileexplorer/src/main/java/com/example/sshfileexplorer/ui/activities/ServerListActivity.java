@@ -6,8 +6,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -33,51 +35,17 @@ public class ServerListActivity extends AppCompatActivity {
     private ServerListAdapter srvListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_server_list);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+            super.onCreate(savedInstanceState);
+            EdgeToEdge.enable(this);
+            setContentView(R.layout.activity_server_list);
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            });
 
 
-        DBHelper db = new DBHelper(this, "srv.db");
-//        db.clear();
-
-        try {
-            Map item = new HashMap();
-
-            for (int i=0;i<5;i++){
-                item.put("host", "host"+Integer.toString(i));
-                item.put("port", 22);
-                item.put("login", "log"+Integer.toString(i));
-                item.put("pass", "pass"+Integer.toString(i));
-                db.addItem(item);
-                item.clear();
-            }
-
-            db.deleteItem(2);
-
-            int size = db.size();
-
-            Log.i(TAG, String.format("siz %d", size));
-
-            for (int i=0;i<size;i++){
-                item = db.getItem(db.getItemId(i));
-
-                if (item.size() > 0){
-                    Log.i(TAG, String.format("%d: %s %d",i, (String)item.get("host"), (int)item.get("port")));
-                }
-            }
-
-
-        }catch (Exception e){
-            Log.e(TAG, e.toString());
-        }
-
-        // title bar
+            // title bar
 //        try {
 //            ActionBar bar = getSupportActionBar();
 ////            bar.setBackgroundDrawable(new ColorDrawable(getColor(R.color.dialog_fg)));
@@ -85,81 +53,116 @@ public class ServerListActivity extends AppCompatActivity {
 //        }catch (Exception e){
 //            // No action bar, nothing modify
 //        }
-//
-        this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // for background and corner support
 
-        // "Add server" button
+            this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // for background and corner support
 
-        FloatingActionButton btnAddServer = findViewById(R.id.btnAddServer);
-        btnAddServer.setOnClickListener(v -> {
-            ServerAddDialog dialog = new ServerAddDialog(ServerListActivity.this);
-            dialog.show(getSupportFragmentManager(), "");
-        });
+            // "Add server" button
 
-        // Servers list
-        Intent service = new Intent(this, SSHService.class);
-
-        srvListAdapter = new ServerListAdapter(this);
-
-        // todo read from base
-        srvListAdapter.addItem("user", "192.168.168.134");
-
-        ListView srvListView = findViewById(R.id.serversList);
-        srvListView.setAdapter(srvListAdapter);
-        srvListView.setOnItemClickListener((parent, view, position, id) -> {
-            String[] list = (String[]) srvListAdapter.getItem(position);
-
-            Log.d(TAG, String.format("connect to %s (%s)", list[0], list[1]));
-
-            service.putExtra("host", "192.168.147.134");
-            service.putExtra("port", 22);
-            service.putExtra("timeout", 1000);
-
-            service.putExtra("login", "user");  // todo need to add
-            service.putExtra("pass", "1234");   // todo need to add
-            startService(service);
-
-            // Run file explorer activity and connect to remote SSH server
-            startActivity(new Intent(this, FileExplorerActivity.class));
-        });
-        srvListAdapter.setOnEditListener((parent, view, position, id) -> {
-            ServerAddDialog dialog = new ServerAddDialog(ServerListActivity.this);
-//            dialog.
-            // fixme filling dialog data + add API
-            dialog.show(getSupportFragmentManager(), "");
-        });
-        srvListAdapter.setOnRemoveListener((parent, view, position, id) -> {
-            YesNoDialog dialog = new YesNoDialog();
-            String[] list = (String[]) srvListAdapter.getItem(position);
-
-            dialog.setTitle("Remove SSH server");
-            dialog.setMessage("Do you want to remove \'" + list[0] + "\'?");
-
-            dialog.setButtonYes("Yes", v -> {
-                srvListAdapter.deleteItem(id);
-                srvListAdapter.notifyDataSetChanged();
-                dialog.dismiss();
+            FloatingActionButton btnAddServer = findViewById(R.id.btnAddServer);
+            btnAddServer.setOnClickListener(v -> {
+                ServerAddDialog dialog = new ServerAddDialog(ServerListActivity.this);
+                dialog.show(getSupportFragmentManager(), "");
             });
-            dialog.setButtonNo("No", v -> dialog.dismiss());
 
-            dialog.show(getSupportFragmentManager(), "");
-        });
+
+
+            // Servers list
+            srvListAdapter = new ServerListAdapter(this);
+            ListView srvListView = findViewById(R.id.serversList);
+            srvListView.setAdapter(srvListAdapter);
+            srvListView.setOnItemClickListener((parent, view, position, id) -> {
+                try {
+                    Map item = srvListAdapter.getItem(position);
+                    this.connect(
+                            (String) item.get("host"),
+                            (Integer) item.get("port"),
+                            (String) item.get("login"),
+                            (String) item.get("pass")
+                    );
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                }
+                ;
+            });
+            srvListAdapter.setOnEditListener((parent, view, position) -> {
+                ServerAddDialog dialog = new ServerAddDialog(ServerListActivity.this);
+//            dialog.
+                // fixme filling dialog data + add API
+                dialog.show(getSupportFragmentManager(), "");
+            });
+            srvListAdapter.setOnRemoveListener((parent, view, position) -> {
+                YesNoDialog dialog = new YesNoDialog();
+
+                String msg = "Do you want to remove \n";
+
+                try {
+                    Map item = srvListAdapter.getItem(position);
+                    msg += (String) item.get("login");
+
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                }
+                msg += " ?";
+
+                dialog.setTitle("Remove SSH server");
+                dialog.setMessage(msg);
+
+                dialog.setButtonYes("Yes", v -> {
+                    srvListAdapter.deleteItem(position);
+                    srvListAdapter.notifyDataSetChanged();
+                    dialog.dismiss();
+                });
+                dialog.setButtonNo("No", v -> dialog.dismiss());
+
+                dialog.show(getSupportFragmentManager(), "");
+            });
     }
 
-    public void addServer(String name, String ip_addr, String ip_port){
+    public void addServer(String ip_addr, String ip_port, String login, String pass, Boolean save, Boolean connect){
+        Map item = new HashMap<>();
 
-        // todo check is exist
-        // todo add server to base
-
-        srvListAdapter.addItem(name, ip_addr + ":"+ip_port);
+        item.put("host", ip_addr);
+        item.put("port", Integer.parseInt(ip_port));
+        item.put("login", login);
+        if (save) {
+            item.put("pass", pass);
+        }else{
+            item.put("pass", null);
+        }
+        srvListAdapter.addItem(item);
         srvListAdapter.notifyDataSetChanged();
 
+        if (connect){
+            if (pass.length() == 0){
+                Toast.makeText(this, "Password not entry!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            this.connect(ip_addr, Integer.parseInt(ip_port), login, pass );
+        }
     }
 
     @Override
     protected void onDestroy() {
-        Intent ssh = new Intent(this, SSHService.class);
-        stopService(ssh);
+        stopService(new Intent(this, SSHService.class));
         super.onDestroy();
+    }
+
+    private void connect(@NonNull String host, @NonNull Integer port, @NonNull String login, @NonNull String pass){
+
+        Log.d(TAG, String.format("connect to '%s:%d' (%s, %s)", host, port, login, pass));
+
+
+        // fixme
+//        Intent ssh = new Intent(this, SSHService.class);
+//        ssh.putExtra("host", host);
+//        ssh.putExtra("port", port);
+//        ssh.putExtra("timeout", 1000);
+//
+//        ssh.putExtra("login", login);
+//        ssh.putExtra("pass", pass);
+//        startService(ssh);
+//
+//        // Run file explorer activity and connect to remote SSH server
+//        startActivity(new Intent(this, FileExplorerActivity.class));
     }
 }

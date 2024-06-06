@@ -1,19 +1,14 @@
 package helpers;
 
-import static android.content.Context.MODE_PRIVATE;
-
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +36,7 @@ public class DBHelper {
         Integer port = (Integer)item.get("port");
         String login = (String)item.get("login");
         String pass = (String)item.get("pass");
+        if (pass == null) pass = "";
         int id = -1;
         if (db.isOpen()){
             Cursor query = db.rawQuery("select * from servers", null);
@@ -50,7 +46,7 @@ public class DBHelper {
         }
         return id;
     }
-    public int getItemId(int pos){
+    public int getId(int pos){
         int ret = -1;
         if (db.isOpen()) {
             Cursor query = db.rawQuery("select * from servers ", null);
@@ -65,7 +61,23 @@ public class DBHelper {
         }
         return ret;
     }
-    public Map getItem(int id){
+    public Map getItemPos(int pos){
+        Map item = new HashMap();
+
+        if (db.isOpen()) {
+            Cursor query = db.rawQuery("select * from servers ", null);
+            try {
+                query.move(pos);
+                item.put("host", query.getString(1));
+                item.put("port", query.getInt(2));
+                item.put("login", query.getString(3));
+                item.put("pass", query.getString(4));
+            } catch (Exception e) { Log.e(TAG, e.toString()); }
+            query.close();
+        }
+        return item;
+    }
+    public Map getItemId(int id){
         Map item = new HashMap();
 
         if (db.isOpen()) {
@@ -87,16 +99,15 @@ public class DBHelper {
         }
         return item;
     }
-    public void deleteItem(int id){
+    public void deleteItemId(int id)  {
         if (db.isOpen()){
-            db.execSQL(String.format("delete from servers where id like %d", id));
+            db.delete("servers", String.format("id=%d", id), null);
         }
     }
     public int size(){
         int ret = 0;
         if (db.isOpen()){
             Cursor query = db.rawQuery("select * from servers", null);
-
             ret = query.getCount();
             query.close();
         }
@@ -105,7 +116,7 @@ public class DBHelper {
 
     public void clear(){
         if (db.isOpen()){
-            db.execSQL("delete from servers");
+            db.delete("servers", null, null);
         }
     }
 }

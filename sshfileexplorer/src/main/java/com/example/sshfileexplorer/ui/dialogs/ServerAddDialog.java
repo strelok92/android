@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
     String TAG = "TAG SSH EXPLORER";
 
     private EditText ip_addr, ip_port, login, pass;
+    private CheckBox save_pass;
 
     private Activity serversListActivity;
     public ServerAddDialog(Activity activity){
@@ -63,6 +65,7 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
 
         pass = (EditText)view.findViewById(R.id.server_pass);
         pass.addTextChangedListener(new EntryValidator(pass));
+        save_pass = view.findViewById(R.id.save_pass);
 
         return view;
     }
@@ -78,28 +81,24 @@ public class ServerAddDialog extends DialogFragment implements View.OnClickListe
             Toast.makeText(getContext(), "IP port is incorrect!", Toast.LENGTH_SHORT).show();
             return;
         }
-        if ((login.length() == 0)||(pass.length() == 0)){
-            Toast.makeText(getContext(), "Login data incorrect!", Toast.LENGTH_SHORT).show();
+
+        if (login.length() == 0){
+            Toast.makeText(getContext(), "Login is incorrect!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (login.length() > 0){
-            ((ServerListActivity)serversListActivity).addServer(
-                    login.getText().toString(),
-                    ip_addr.getText().toString(),
-                    ip_port.getText().toString()
-            );
-        }else{
-            ((ServerListActivity)serversListActivity).addServer(
-                    ip_addr.getText().toString(),
-                    ip_addr.getText().toString(),
-                    ip_port.getText().toString()
-            );
+        if ((pass.length() == 0)&&(save_pass.isChecked())){
+            Toast.makeText(getContext(), "Password is incorrect!", Toast.LENGTH_SHORT).show();
+            return;
         }
-
-        if (v.getId() == R.id.bConnect) {
-            // todo run connect process
-        }
+        ((ServerListActivity)serversListActivity).addServer(
+                ip_addr.getText().toString(),
+                ip_port.getText().toString(),
+                login.getText().toString(),
+                pass.getText().toString(),
+                save_pass.isChecked(),
+                (v.getId() == R.id.bConnect)
+        );
         dismiss();
     }
     private class EntryValidator implements TextWatcher {
