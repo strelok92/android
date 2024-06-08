@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.dialogs.ServerAddDialog">
+    tools:context=".ui.dialogs.ServerDialog">
 
     <LinearLayout
         style="@style/dialog_frame"
@@ -13,7 +13,7 @@
 
         <!--Title-->
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/server_dialog_title"
             style="@style/dialog_title"
             android:text="Add SSH server"/>
 

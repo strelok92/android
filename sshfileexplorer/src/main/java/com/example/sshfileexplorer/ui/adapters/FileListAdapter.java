@@ -72,15 +72,19 @@ public class FileListAdapter extends BaseAdapter {
         }
         ((TextView)view.findViewById(R.id.tFileName)).setText(list.get(position).getName());
         int size = list.get(position).getSize();
+
+        String fileInfo = "";
         if (size < 1024){
-            ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d b", size));
+            fileInfo += String.format("%d b  ", size);
         }else if (size < 1024*1024){
-            ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d Kb", size/1024));
+            fileInfo += String.format("%d Kb  ", size/1024);
         }else if (size < 1024*1024*1024){
-            ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d Mb", size/(1024*1024)));
+            fileInfo += String.format("%d Mb  ", size/(1024*1024));
         }else{
-            ((TextView)view.findViewById(R.id.tFileSize)).setText(String.format("%d Gb", size/(1024*1024*1024)));
+            fileInfo += String.format("%d Gb  ", size/(1024*1024*1024));
         }
+        fileInfo += list.get(position).getDateTime();
+        ((TextView)view.findViewById(R.id.tFileSize)).setText(fileInfo);
         return view;
     }
 

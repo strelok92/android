@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +34,7 @@ public class YesNoDialog extends DialogFragment{
 
         try {
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        }catch (Exception e){
-            // todo add code
-        }
+        }catch (Exception e){ Log.e(TAG, e.toString());}
 
         if (title != null) ((TextView)view.findViewById(R.id.titleYesNo)).setText(title);
         if (message != null) ((TextView)view.findViewById(R.id.msgYesNo)).setText(message);

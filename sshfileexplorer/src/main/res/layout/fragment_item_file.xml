@@ -32,10 +32,11 @@
 
             <TextView
                 android:id="@+id/tFileName"
-                style="@style/item_title" />
+                style="@style/item_file_title" />
             <TextView
                 android:id="@+id/tFileSize"
-                style="@style/item_text" />
+                style="@style/item_file_text"
+                />
 
         </LinearLayout>
     </LinearLayout>
@@ -48,9 +49,8 @@
             android:id="@+id/bFileDownload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/baseline_download_32"
+            app:srcCompat="@drawable/baseline_download_24"
             android:layout_gravity="right|center"
-            android:layout_margin="10dp"
             android:backgroundTint="@color/colorIconBackground"
             />
 

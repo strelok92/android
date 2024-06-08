@@ -135,8 +135,5 @@ public class SSHHelper {
         public String getDate() {return date;}
         public String getTime() {return time;}
         public String getDateTime() {return date+" " +time;}
-
-        //  todo add getPermissions                  file.getOwner(); // String []
-
     }
 }

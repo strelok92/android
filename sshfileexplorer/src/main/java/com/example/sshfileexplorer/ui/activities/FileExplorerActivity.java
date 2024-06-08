@@ -2,13 +2,10 @@ package com.example.sshfileexplorer.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
-import android.window.OnBackInvokedDispatcher;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -17,7 +14,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.sshfileexplorer.R;
 import com.example.sshfileexplorer.ui.adapters.FileListAdapter;
-import com.example.sshfileexplorer.ui.dialogs.ServerAddDialog;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -66,7 +62,6 @@ public class FileExplorerActivity extends AppCompatActivity {
             if (cmd == SSHHelper.CMD_LS){
                 if (code == SSHHelper.CODE_COMPLETE){
                     listAdapter.notifyDataSetChanged();
-
                 }else if (code == SSHHelper.CODE_DATA) {
                     try {
                         listAdapter.addItem(new SSHHelper.LSFile(data.toString()));

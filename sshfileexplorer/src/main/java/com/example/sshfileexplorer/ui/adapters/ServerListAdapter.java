@@ -26,12 +26,12 @@ public class ServerListAdapter extends BaseAdapter {
 
     public ServerListAdapter(Context ctx){
         lInflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        db = new DBHelper(ctx, "servers.db");
+        db = new DBHelper(ctx, "servers.xml");
     }
     @Override
     public int getCount() {return db.size(); }
     @Override
-    public Map getItem(int position) { return db.getItemId(db.getId(position)); }
+    public Map getItem(int position) { return db.getItem(position); }
     @Override
     public long getItemId(int position) {return position;}
     @Override
@@ -65,7 +65,7 @@ public class ServerListAdapter extends BaseAdapter {
         }
 
         // Update item data on the View
-        Map item = db.getItemPos(position);
+        Map item = db.getItem(position);
 
         if (item.size() > 0) {
             ((TextView) view.findViewById(R.id.tServerLogin)).setText(((String) item.get("host")).toString());
@@ -76,7 +76,7 @@ public class ServerListAdapter extends BaseAdapter {
         return view;
     }
     public void addItem(Map item){ db.addItem(item); }
-    public void deleteItem(long id){ db.deleteItemId(db.getId((int)id)); }
+    public void deleteItem(long id){ db.deleteItem((int)id); }
     public void clear(){db.clear();}
     public void setOnRemoveListener(OnListener listener){
         removeListener = listener;

@@ -7,7 +7,7 @@
 
     <!--  text  -->
     <dimen name="dimTextBig">20dp</dimen>
-    <dimen name="dimTextMid">18dp</dimen>
+    <dimen name="dimTextMid">16dp</dimen>
     <dimen name="dimTextSmall">12dp</dimen>
 
 </resources>
