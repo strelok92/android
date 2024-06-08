@@ -72,7 +72,6 @@ public class DBHelper {
 
     }
 
-    @SuppressLint("Range")
     public void addItem(@NonNull Map item){
         servers.add(item);
         updateBase();
@@ -84,10 +83,16 @@ public class DBHelper {
         servers.remove(pos);
         updateBase();
     }
+    public void editItem(int pos, @NonNull Map item){
+        servers.set(pos, item);
+        updateBase();
+    }
     public void clear(){
         servers.clear();
         updateBase();
     }
+
+    // fixme add edit item
 
     private void updateBase(){
         XmlSerializer xml;

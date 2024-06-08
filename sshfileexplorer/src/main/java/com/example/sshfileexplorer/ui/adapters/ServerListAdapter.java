@@ -76,6 +76,8 @@ public class ServerListAdapter extends BaseAdapter {
         return view;
     }
     public void addItem(Map item){ db.addItem(item); }
+
+    public void editItem(int pos, Map item){db.editItem(pos, item);};
     public void deleteItem(long id){ db.deleteItem((int)id); }
     public void clear(){db.clear();}
     public void setOnRemoveListener(OnListener listener){

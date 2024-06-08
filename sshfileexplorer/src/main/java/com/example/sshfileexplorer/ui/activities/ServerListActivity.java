@@ -54,26 +54,38 @@ public class ServerListActivity extends AppCompatActivity {
 
             this.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); // for background and corner support
 
-            // "Add server" button
+            // Create new server
 
+            // onAddDialog
             FloatingActionButton btnAddServer = findViewById(R.id.btnAddServer);
             btnAddServer.setOnClickListener(v -> {
                 ServerDialog dialog = new ServerDialog();
                 dialog.setButtonConnect("Connect", (view)->{
-                    addServer((String)dialog.get(ServerDialog.HOST),
-                            (String)dialog.get(ServerDialog.PORT),
-                            (String)dialog.get(ServerDialog.LOGIN),
-                            (String)dialog.get(ServerDialog.PASS),
-                            (Boolean) dialog.get(ServerDialog.PASS_SAVE), true);
+                    String host = (String)dialog.get(ServerDialog.HOST);
+                    String port = (String)dialog.get(ServerDialog.PORT);
+                    String login = (String)dialog.get(ServerDialog.LOGIN);
+                    String pass = (String)dialog.get(ServerDialog.PASS);
                     dialog.dismiss();
+
+                    if ((Boolean) dialog.get(ServerDialog.PASS_SAVE)) {
+                        saveServer(-1, host, port, login, pass);
+                    }else{
+                        saveServer(-1, host, port, login, "");
+                    }
+                    connect(host, port, login, pass);
                 });
                 dialog.setButtonAccept("Save", (view)->{
-                    addServer((String)dialog.get(ServerDialog.HOST),
-                            (String)dialog.get(ServerDialog.PORT),
-                            (String)dialog.get(ServerDialog.LOGIN),
-                            (String)dialog.get(ServerDialog.PASS),
-                            (Boolean) dialog.get(ServerDialog.PASS_SAVE), false);
+                    String host = (String)dialog.get(ServerDialog.HOST);
+                    String port = (String)dialog.get(ServerDialog.PORT);
+                    String login = (String)dialog.get(ServerDialog.LOGIN);
+                    String pass = (String)dialog.get(ServerDialog.PASS);
                     dialog.dismiss();
+
+                    if ((Boolean) dialog.get(ServerDialog.PASS_SAVE)) {
+                        saveServer(-1, host, port, login, pass);
+                    }else{
+                        saveServer(-1, host, port, login, "");
+                    }
                 });
                 dialog.show(getSupportFragmentManager(), "");
             });
@@ -95,11 +107,12 @@ public class ServerListActivity extends AppCompatActivity {
                     Log.e(TAG, e.toString());
                 }
             });
+
+            // Edit server
+
+            // onEditDialog
             srvListAdapter.setOnEditListener((parent, view, position) -> {
                 ServerDialog dialog = new ServerDialog();
-
-                // filling dialog data
-
                 dialog.setTitle("Edit SSH server");
                 try {
                     Map item = srvListAdapter.getItem(position);
@@ -112,21 +125,40 @@ public class ServerListActivity extends AppCompatActivity {
                     Log.e(TAG, e.toString());
                 }
 
-                // filling dialog response
-
+                // onConnect
                 dialog.setButtonConnect("Connect", (v)->{
-                        connect(
-                                (String)dialog.get(ServerDialog.HOST),
-                                (String)dialog.get(ServerDialog.PORT),
-                                (String)dialog.get(ServerDialog.LOGIN),
-                                (String)dialog.get(ServerDialog.PASS)
-                        );
+                    String host = (String)dialog.get(ServerDialog.HOST);
+                    String port = (String)dialog.get(ServerDialog.PORT);
+                    String login = (String)dialog.get(ServerDialog.LOGIN);
+                    String pass = (String)dialog.get(ServerDialog.PASS);
                     dialog.dismiss();
 
+                    if ((Boolean) dialog.get(ServerDialog.PASS_SAVE)) {
+                        saveServer(position, host, port, login, pass);
+                    }else{
+                        saveServer(position, host, port, login, "");
+                    }
+                    connect(host, port, login, pass);
                 });
-                dialog.setButtonAccept("Cancel", (v)->dialog.dismiss());
+
+                // onSave
+                dialog.setButtonAccept("Save", (v)->{
+                    String host = (String)dialog.get(ServerDialog.HOST);
+                    String port = (String)dialog.get(ServerDialog.PORT);
+                    String login = (String)dialog.get(ServerDialog.LOGIN);
+                    String pass = (String)dialog.get(ServerDialog.PASS);
+                    dialog.dismiss();
+
+                    if ((Boolean) dialog.get(ServerDialog.PASS_SAVE)) {
+                        saveServer(position, host, port, login, pass);
+                    }else{
+                        saveServer(position, host, port, login, "");
+                    }
+                });
                 dialog.show(getSupportFragmentManager(), "");
             });
+
+            // onRemove
             srvListAdapter.setOnRemoveListener((parent, view, position) -> {
                 YesNoDialog dialog = new YesNoDialog();
                 String msg = "Do you want to remove \n";
@@ -152,23 +184,20 @@ public class ServerListActivity extends AppCompatActivity {
             });
     }
 
-    private void addServer(String ip_addr, String ip_port, String login, String pass, Boolean save, Boolean connect){
+    private void saveServer(int pos, String ip_addr, String ip_port, String login, String pass){
         Map item = new HashMap<>();
 
             item.put("host", ip_addr);
             item.put("port", ip_port);
             item.put("login", login);
-            if (save) {
-                item.put("pass", pass);
-            } else {
-                item.put("pass", "");
-            }
-            srvListAdapter.addItem(item);
-            srvListAdapter.notifyDataSetChanged();
+            item.put("pass", pass);
 
-            if (connect) {
-                this.connect(ip_addr, ip_port, login, pass);
+            if (pos < 0) {
+                srvListAdapter.addItem(item);
+            }else{
+                srvListAdapter.editItem(pos,item);
             }
+            srvListAdapter.notifyDataSetChanged();
     }
     @Override
     protected void onDestroy() {
