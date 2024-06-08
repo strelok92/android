@@ -183,7 +183,6 @@ public class ServerListActivity extends AppCompatActivity {
                 dialog.show(getSupportFragmentManager(), "");
             });
     }
-
     private void saveServer(int pos, String ip_addr, String ip_port, String login, String pass){
         Map item = new HashMap<>();
 
@@ -204,7 +203,6 @@ public class ServerListActivity extends AppCompatActivity {
         stopService(new Intent(this, SSHService.class));
         super.onDestroy();
     }
-
     private void connect(@NonNull String host, @NonNull String port, @NonNull String login, @NonNull String pass){
         Log.d(TAG, String.format("connect to '%s:%s' (%s, %s)", host, port, login, pass));
 
