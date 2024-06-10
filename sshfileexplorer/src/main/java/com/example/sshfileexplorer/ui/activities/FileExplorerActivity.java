@@ -2,6 +2,7 @@ package com.example.sshfileexplorer.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
@@ -35,6 +36,8 @@ public class FileExplorerActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Logout button
+
         FloatingActionButton btnExit = findViewById(R.id.btnExit);
         btnExit.setOnClickListener(v -> {
             YesNoDialog dialog = new YesNoDialog();
@@ -51,8 +54,8 @@ public class FileExplorerActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "");
         });
 
-        ssh = new SSHHelper(this, (path)->{ssh.ls();});
 
+        ssh = new SSHHelper(this, (path)->{ssh.ls();});
         ssh.setOnListener((cmd, code, data)->{
             if (code == SSHHelper.CODE_ERROR){
                 // fixme not working
@@ -74,12 +77,21 @@ public class FileExplorerActivity extends AppCompatActivity {
         });
 
         // Init adapter
+
         listAdapter = new FileListAdapter(this);
         // fixme need to add
-//        listAdapter.setOnDownloadListener((parent, view, position, id)->{
-//            FileListAdapter adapter = (FileListAdapter)parent.getAdapter();
-//            SSHHelper.LSFile file = (SSHHelper.LSFile)adapter.getItem(position);
-//        });
+        listAdapter.setOnDownloadListener((parent, view, position, id)->{
+            FileListAdapter adapter = (FileListAdapter)parent.getAdapter();
+            SSHHelper.LSFile file = (SSHHelper.LSFile)adapter.getItem(position);
+
+            String path = ssh.getPath();
+            String fileName = path;
+            if (fileName.getBytes()[fileName.length()-1] != '/'){
+                fileName += "/";
+            }
+            fileName += file.getName();
+            ssh.getFile(fileName);
+        });
 
         ListView list = findViewById(R.id.filesList);
         list.setAdapter(listAdapter);

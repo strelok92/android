@@ -6,13 +6,21 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,6 +41,7 @@ public class SSHService extends Service {
     public IBinder onBind(Intent intent) {return null;}
 
     private ChannelExec channel = null;
+    ChannelSftp sftp;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         PendingIntent pi = intent.getParcelableExtra("response");
@@ -72,6 +81,7 @@ public class SSHService extends Service {
                 if (session.isConnected() == false) {
                     Integer timeout = intent.getIntExtra("timeout", 30000);
                     session.connect(timeout);
+                    sftp = (ChannelSftp)session.openChannel("sftp");
                 }
             }catch (Exception e){
                 Log.e(TAG, e.toString());
@@ -86,35 +96,79 @@ public class SSHService extends Service {
 
             String cmd = intent.getStringExtra("cmd");
             if (cmd == null) return;
-            try {
-                String line;
 
-                channel = (ChannelExec) session.openChannel("exec"); // "shell", "exec", "x11", "sftp"
+            if (cmd.equals("get")) {
+                // SFTP
+                try {
+                    String file = intent.getStringExtra("file");
 
-                final BufferedReader
-                        readerInput = new BufferedReader(new InputStreamReader(channel.getInputStream())),
-                        readerError = new BufferedReader(new InputStreamReader(channel.getErrStream()));
+                    if (sftp.isConnected() == false) {
+                        Log.w(TAG, "Connect");
+                        sftp.connect();
+                    }
 
-                channel.setCommand(cmd);
-                channel.connect();
+                    String f[] = file.split("/");
+                    String name = getApplicationInfo().dataDir + File.separator + f[f.length-1];
 
-                // read response
-                while((line = readerInput.readLine())!= null) {
-                    pi.send(this, RSP_SERVER_CMD_ACK, new Intent().putExtra("resp", line));
+                    sftp.get(file, new FileOutputStream(name));
+
+
+//                    String sftp.getHome()
+//                    sftp.ls(path)
+//                    sftp.cd(path);
+//                    sftp.mkdir(path);
+//                    sftp.rename(old, new);
+//                    sftp.pwd()
+//                    sftp.rm(path);
+//                    sftp.rmdir(path);
+
+
+//                    sftp.disconnect();
+
+
+
+                    pi.send(this, RSP_SERVER_CMD_DONE, null);
+
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                    try {
+                        pi.send(this, RSP_SERVER_CMD_ERROR, new Intent().putExtra("resp", "server command error"));
+                    } catch (Exception pe) {
+                        Log.e(TAG, pe.toString());
+                    }
                 }
-                // read error
-                while((line = readerError.readLine())!= null) {
-                    pi.send(this, RSP_SERVER_CMD_NACK, new Intent().putExtra("resp", line));
-                    Log.e(TAG,line );
-                }
-                pi.send(this, RSP_SERVER_CMD_DONE, null);
+            }else {
 
-            }catch (Exception e){
-                Log.e(TAG, e.toString());
-                try{
-                    pi.send(this, RSP_SERVER_CMD_ERROR, new Intent().putExtra("resp", "server command error"));
-                }catch (Exception pe){
-                    Log.e(TAG, pe.toString());
+                // SSH
+                try {
+                    String line;
+
+                    channel = (ChannelExec) session.openChannel("exec"); // "shell", "exec", "x11", "sftp"
+
+                    final BufferedReader
+                            readerInput = new BufferedReader(new InputStreamReader(channel.getInputStream())),
+                            readerError = new BufferedReader(new InputStreamReader(channel.getErrStream()));
+
+                    channel.setCommand(cmd);
+                    channel.connect();
+
+                    // read response
+                    while ((line = readerInput.readLine()) != null) {
+                        pi.send(this, RSP_SERVER_CMD_ACK, new Intent().putExtra("resp", line));
+                    }
+                    // read error
+                    while ((line = readerError.readLine()) != null) {
+                        pi.send(this, RSP_SERVER_CMD_NACK, new Intent().putExtra("resp", line));
+                    }
+                    pi.send(this, RSP_SERVER_CMD_DONE, null);
+
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                    try {
+                        pi.send(this, RSP_SERVER_CMD_ERROR, new Intent().putExtra("resp", "server command error"));
+                    } catch (Exception pe) {
+                        Log.e(TAG, pe.toString());
+                    }
                 }
             }
         });

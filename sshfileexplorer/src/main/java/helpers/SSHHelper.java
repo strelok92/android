@@ -2,6 +2,7 @@ package helpers;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -49,7 +50,11 @@ public class SSHHelper {
     }
     public void cd(String dir){
         service.putExtra("response", activity.createPendingResult(CMD_CD, activity.getIntent(), 0));
-        service.putExtra("cmd", "cd " + path + "/"+ dir + " && pwd");
+        if (path.equals("/") == false) {
+            service.putExtra("cmd", "cd " + path + "/" + dir + " && pwd");
+        }else{
+            service.putExtra("cmd", "cd " + "/" + dir + " && pwd");
+        }
         activity.startService(service);
     }
     public void setOnListener(Listener listener){
@@ -84,6 +89,12 @@ public class SSHHelper {
                 listener.onListener(CMD_CD, CODE_COMPLETE, "");
             }
         }
+    }
+    public String getPath(){ return path; }
+    public void getFile(String file){
+        service.putExtra("cmd", "get");
+        service.putExtra("file", file);
+        activity.startService(service);
     }
 
     public static class LSFile{
