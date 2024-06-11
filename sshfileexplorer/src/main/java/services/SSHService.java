@@ -112,21 +112,6 @@ public class SSHService extends Service {
 
                     sftp.get(file, new FileOutputStream(name));
 
-
-//                    String sftp.getHome()
-//                    sftp.ls(path)
-//                    sftp.cd(path);
-//                    sftp.mkdir(path);
-//                    sftp.rename(old, new);
-//                    sftp.pwd()
-//                    sftp.rm(path);
-//                    sftp.rmdir(path);
-
-
-//                    sftp.disconnect();
-
-
-
                     pi.send(this, RSP_SERVER_CMD_DONE, null);
 
                 } catch (Exception e) {
