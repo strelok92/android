@@ -24,7 +24,10 @@ import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import services.SFTPService;
@@ -166,25 +169,60 @@ public class FileExplorerActivity extends AppCompatActivity {
                     cmdLS();
                     cmdPWD();
                     break;
+
                 case REQ_PWD:
                     TextView title = findViewById(R.id.filesTitle);
                     title.setText(data.getStringExtra("rsp"));
-
                     break;
                 case REQ_LS:
                     String[] arr = data.getStringArrayExtra("rsp");
                     listAdapter.clear();
-                    // todo add sorting
+
+                    // create items
+                    ArrayList<FileListAdapter.FileItem> files = new ArrayList<>();
+                    ArrayList<FileListAdapter.FileItem> dirs = new ArrayList<>();
+
+                    class FileItem implements FileListAdapter.FileItem{
+                        private String[] file;
+                        private String[] date;
+                        FileItem (String[] f, String[] d){ file = f; date = d;}
+                        @Override public String getName() { return file[0]; }
+                        @Override public int getSize() { return Integer.parseInt(file[1]); }
+                        @Override public char getType() { return file[2].toCharArray()[0];}
+                        @Override public String getDate() { return date[2]+" " + date[1]+" " + date[5] +" " + date[3]; }
+                    }
+
                     for (Iterator it = Arrays.stream(arr).iterator();it.hasNext();){
                         String[] file = ((String)it.next()).split(SFTPService.ls_separator);
                         String[] date = file[3].split(" ");
                         if (file[0].toCharArray()[0] == '.') continue;
-                        listAdapter.addItem(new FileListAdapter.FileItem() {
-                            @Override public String getName() { return file[0]; }
-                            @Override public int getSize() { return Integer.parseInt(file[1]); }
-                            @Override public char getType() { return file[2].toCharArray()[0];}
-                            @Override public String getDate() { return date[2]+" " + date[1]+" " + date[5] +" " + date[3]; }
-                        });
+
+                        if (file[2].toCharArray()[0] == 'd'){   // dir
+                            dirs.add(new FileItem(file, date));
+                        }else if (file[2].toCharArray()[0] == '-'){   // file
+                            files.add(new FileItem(file, date));
+                        }
+                        /*
+                            d (directory)
+                            c (character device)
+                            l (symlink)
+                            p (named pipe)
+                            s (socket)
+                            b (block device)
+                            D (door, not common on Linux systems, but has been ported)
+                        */
+                    }
+
+                    // Sort items
+                    Collections.sort(dirs,(o1, o2) ->  o1.getName().compareTo(o2.getName()));
+                    Collections.sort(files,(o1, o2) ->  o1.getName().compareTo(o2.getName()));
+
+                    // Add to view
+                    for (Iterator it = dirs.iterator();it.hasNext();){
+                        listAdapter.addItem((FileListAdapter.FileItem)it.next());
+                    }
+                    for (Iterator it = files.iterator();it.hasNext();){
+                        listAdapter.addItem((FileListAdapter.FileItem)it.next());
                     }
                     listAdapter.notifyDataSetChanged();
                     break;
@@ -196,6 +234,9 @@ public class FileExplorerActivity extends AppCompatActivity {
             }
         } else if (resultCode == SFTPService.RSP_CONN_ERR){
             showMsg("conn: "+data.getStringExtra("rsp"),true);
+            if (data.getStringExtra("rsp").charAt(0) == '3'){   // if permission denied
+                cmdCD("..");
+            }
         }else if (resultCode == SFTPService.RSP_CMD_ERR){
             showMsg("cmd: "+data.getStringExtra("rsp"), true);
         }else {

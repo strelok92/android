@@ -158,7 +158,6 @@ public class SFTPService extends Service {
 
             if (cmd.equals("cd")) {
                 sftp.cd(path);
-//                sftp.cd(sftp.pwd() + "/" + path);
             }  else if (cmd.equals("mkdir")) {
                 sftp.mkdir(path);
             } else if (cmd.equals("rm")) {
@@ -192,9 +191,7 @@ public class SFTPService extends Service {
                 code = RSP_CMD_ERR;
             }
             sendResponse(pi, code, msg);
-            return;
-        }catch (Exception e){ Log.e(TAG, e.toString()); }
-        sendResponse(pi, RSP_CONN_ERR, "channel error");
+        }catch (Exception e){ Log.e(TAG, e.toString() + ", cmd="+cmd); sendResponse(pi, RSP_CONN_ERR, e.toString());}
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
