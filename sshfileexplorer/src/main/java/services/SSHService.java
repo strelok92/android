@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@Deprecated
 public class SSHService extends Service {
     public static final int RSP_SERVER_INIT_ERROR = -4;
     public static final int RSP_SERVER_CONNECT_ERROR = -3;

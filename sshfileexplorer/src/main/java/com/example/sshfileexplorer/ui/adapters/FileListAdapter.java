@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -17,14 +16,14 @@ import com.example.sshfileexplorer.R;
 
 import java.util.ArrayList;
 
-import helpers.SSHHelper;
-
 public class FileListAdapter extends BaseAdapter {
+    public interface FileItem{String getName(); int getSize();char getType(); String getDate();};
     public interface OnListener {void onEvent(AdapterView<?> parent, View view, int position, long id);}
     String TAG = "TAG SSH EXPLORER";
-    private ArrayList<SSHHelper.LSFile> list;
+    private ArrayList<FileItem> list;
     private LayoutInflater inflater;
-    private OnListener listener = null;
+    private OnListener downloadListener = null;
+    private OnListener selectListener = null;
 
     public FileListAdapter(Context ctx){
         inflater = (LayoutInflater)ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -43,6 +42,14 @@ public class FileListAdapter extends BaseAdapter {
         if (view == null) {
             view = inflater.inflate(R.layout.fragment_item_file, parent, false);
 
+            // Item long select listener
+            view.setOnLongClickListener(v -> {
+                AdapterView.OnItemLongClickListener click = ((AdapterView) parent).getOnItemLongClickListener();
+                if (click != null) {
+                    click.onItemLongClick((AdapterView) parent, v, position, position);
+                }
+                return true;
+            });
             // Item select listener
             view.setOnClickListener(v -> {
                 AdapterView.OnItemClickListener click = ((AdapterView) parent).getOnItemClickListener();
@@ -52,8 +59,8 @@ public class FileListAdapter extends BaseAdapter {
             });
             // Download file button
             view.findViewById(R.id.bFileDownload).setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onEvent((AdapterView) parent, v, position, position);
+                if (downloadListener != null) {
+                    downloadListener.onEvent((AdapterView) parent, v, position, position);
                 }
             });
         }
@@ -61,14 +68,14 @@ public class FileListAdapter extends BaseAdapter {
         // Update view
 
         ImageButton bFileDownload = view.findViewById(R.id.bFileDownload);
-        if (list.get(position).getType() == SSHHelper.LSFile.TYPE_FILE) {
-            bFileDownload.setVisibility(View.VISIBLE);
-            view.findViewById(R.id.iFile).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.iFolder).setVisibility(View.GONE);
-        }else{
+        if (list.get(position).getType() == 'd') {
             bFileDownload.setVisibility(View.INVISIBLE);
             view.findViewById(R.id.iFile).setVisibility(View.GONE);
             view.findViewById(R.id.iFolder).setVisibility(View.VISIBLE);
+        }else{
+            bFileDownload.setVisibility(View.VISIBLE);
+            view.findViewById(R.id.iFile).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.iFolder).setVisibility(View.GONE);
         }
         ((TextView)view.findViewById(R.id.tFileName)).setText(list.get(position).getName());
         int size = list.get(position).getSize();
@@ -83,13 +90,14 @@ public class FileListAdapter extends BaseAdapter {
         }else{
             fileInfo += String.format("%d Gb  ", size/(1024*1024*1024));
         }
-        fileInfo += list.get(position).getDateTime();
+        fileInfo += list.get(position).getDate();
         ((TextView)view.findViewById(R.id.tFileSize)).setText(fileInfo);
         return view;
     }
 
-    public void addItem(@NonNull SSHHelper.LSFile file){list.add(file);}
+    public void addItem(@NonNull FileItem file){list.add(file);}
     public void deleteItem(long id){list.remove((int)id);}
     public void clear(){list.clear();}
-    public void setOnDownloadListener(OnListener onListener){listener = onListener;}
+    public void setOnDownloadListener(OnListener onListener){
+        downloadListener = onListener;}
 }

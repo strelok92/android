@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import services.SSHService;
 
+@Deprecated
 public class SSHHelper {
     public interface Listener{void onListener(int cmd, int code, Object data);}
     public interface InitListener{void onInit(String path);}

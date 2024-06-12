@@ -3,7 +3,12 @@ package com.example.sshfileexplorer.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -18,13 +23,24 @@ import com.example.sshfileexplorer.ui.adapters.FileListAdapter;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import helpers.SSHHelper;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Iterator;
+
+import services.SFTPService;
 
 public class FileExplorerActivity extends AppCompatActivity {
     String TAG = "TAG SSH EXPLORER";
     private FileListAdapter listAdapter;
-    private SSHHelper ssh;
+    private Intent srvSFTP;
 
+    private final int REQ_CONNECT=0;
+    private final int REQ_LS=1;
+    private final int REQ_CD=2;
+    private final int REQ_PWD=3;
+    private final int REQ_GET=4;
+
+    private String storageDir;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,87 +52,155 @@ public class FileExplorerActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Logout button
+        storageDir = getApplicationInfo().dataDir;
 
-        FloatingActionButton btnExit = findViewById(R.id.btnExit);
+        // connect to server
+
+        Intent intent = this.getIntent();
+        srvSFTP = new Intent(this, SFTPService.class);
+        srvSFTP.putExtra("host", intent.getStringExtra("host"));
+        srvSFTP.putExtra("port", intent.getStringExtra("port"));
+        srvSFTP.putExtra("login", intent.getStringExtra("login"));
+        srvSFTP.putExtra("pass", intent.getStringExtra("pass"));
+
+        srvSFTP.putExtra("callback", createPendingResult(REQ_CONNECT, getIntent(), 0));
+        startService(srvSFTP);
+
+        // UI init
+
+        // Logout button
+        ImageButton btnExit = findViewById(R.id.btnExit);
         btnExit.setOnClickListener(v -> {
             YesNoDialog dialog = new YesNoDialog();
             dialog.setTitle("Remove SSH server");
             dialog.setMessage("Disconnect?");
 
             dialog.setButtonYes("Yes", view -> {
-                ssh.stop();
+                stopService(new Intent(this, SFTPService.class));
                 this.finish();
                 dialog.dismiss();
             });
             dialog.setButtonNo("No", view -> dialog.dismiss());
-
             dialog.show(getSupportFragmentManager(), "");
-        });
-
-
-        ssh = new SSHHelper(this, (path)->{ssh.ls();});
-        ssh.setOnListener((cmd, code, data)->{
-            if (code == SSHHelper.CODE_ERROR){
-                // fixme not working
-                //  Toast.makeText(getApplicationContext(), data.toString(), Toast.LENGTH_LONG);
-                return;
-            }
-            if (cmd == SSHHelper.CMD_LS){
-                if (code == SSHHelper.CODE_COMPLETE){
-                    listAdapter.notifyDataSetChanged();
-                }else if (code == SSHHelper.CODE_DATA) {
-                    try {
-                        listAdapter.addItem(new SSHHelper.LSFile(data.toString()));
-                    }catch (Exception e){}
-                }
-            }
-            if ((cmd == SSHHelper.CMD_CD) && (code == SSHHelper.CODE_COMPLETE)){
-                ssh.ls();
-            }
         });
 
         // Init adapter
 
         listAdapter = new FileListAdapter(this);
-        // fixme need to add
         listAdapter.setOnDownloadListener((parent, view, position, id)->{
-            FileListAdapter adapter = (FileListAdapter)parent.getAdapter();
-            SSHHelper.LSFile file = (SSHHelper.LSFile)adapter.getItem(position);
-
-            String path = ssh.getPath();
-            String fileName = path;
-            if (fileName.getBytes()[fileName.length()-1] != '/'){
-                fileName += "/";
-            }
-            fileName += file.getName();
-            ssh.getFile(fileName);
+            FileListAdapter.FileItem file = (FileListAdapter.FileItem)listAdapter.getItem(position);
+            if (file.getType() == 'd')  return;
+            cmdGET(file.getName());
         });
 
         ListView list = findViewById(R.id.filesList);
         list.setAdapter(listAdapter);
 
         list.setOnItemClickListener((parent, view, position, id)->{
-            SSHHelper.LSFile file = (SSHHelper.LSFile)listAdapter.getItem(position);
-
-            if (file.getType() == SSHHelper.LSFile.TYPE_DIR) {
-                listAdapter.clear();
-                ssh.cd(file.getName());
+            FileListAdapter.FileItem file = (FileListAdapter.FileItem)listAdapter.getItem(position);
+            if (file.getType() == 'd') {
+                cmdCD(file.getName());
             }
         });
 
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void handleOnBackPressed() {
-                listAdapter.clear();
-                ssh.cd("..");
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(TAG, String.format("onItemLongClick %d",position));
+                return false;
             }
         });
-        ssh.start();
+
+        // Back button pressed process
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override public void handleOnBackPressed() { cmdCD(".."); }
+        });
+    }
+    @Override
+    protected void onDestroy() {
+        stopService(new Intent(this, SFTPService.class));
+        super.onDestroy();
+    }
+
+    private void cmdLS(){
+        srvSFTP.putExtra("callback", createPendingResult(REQ_LS, getIntent(), 0));
+        srvSFTP.putExtra("path", ".");
+        srvSFTP.putExtra("cmd", "ls");
+        startService(srvSFTP);
+    }
+    private void cmdCD(String path){
+        srvSFTP.putExtra("callback", createPendingResult(REQ_CD, getIntent(), 0));
+        srvSFTP.putExtra("path", path);
+        srvSFTP.putExtra("cmd", "cd");
+        startService(srvSFTP);
+    }
+    private void cmdPWD(){
+        srvSFTP.putExtra("callback", createPendingResult(REQ_PWD, getIntent(), 0));
+        srvSFTP.putExtra("cmd", "pwd");
+        startService(srvSFTP);
+    }
+    private void cmdGET(String name){
+        srvSFTP.putExtra("callback", createPendingResult(REQ_GET, getIntent(), 0));
+        srvSFTP.putExtra("from", name);
+        srvSFTP.putExtra("to", storageDir + File.separator + name);
+        srvSFTP.putExtra("cmd", "get");
+        startService(srvSFTP);
+    }
+
+    private void showMsg(String msg){
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+    private void showMsg(String msg, Boolean err){
+        if (err){
+            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == SFTPService.RSP_OK){
+            switch (requestCode){
+                case REQ_CONNECT:
+                case REQ_CD:
+                    cmdLS();
+                    cmdPWD();
+                    break;
+                case REQ_PWD:
+                    TextView title = findViewById(R.id.filesTitle);
+                    title.setText(data.getStringExtra("rsp"));
+
+                    break;
+                case REQ_LS:
+                    String[] arr = data.getStringArrayExtra("rsp");
+                    listAdapter.clear();
+                    // todo add sorting
+                    for (Iterator it = Arrays.stream(arr).iterator();it.hasNext();){
+                        String[] file = ((String)it.next()).split(SFTPService.ls_separator);
+                        String[] date = file[3].split(" ");
+                        if (file[0].toCharArray()[0] == '.') continue;
+                        listAdapter.addItem(new FileListAdapter.FileItem() {
+                            @Override public String getName() { return file[0]; }
+                            @Override public int getSize() { return Integer.parseInt(file[1]); }
+                            @Override public char getType() { return file[2].toCharArray()[0];}
+                            @Override public String getDate() { return date[2]+" " + date[1]+" " + date[5] +" " + date[3]; }
+                        });
+                    }
+                    listAdapter.notifyDataSetChanged();
+                    break;
+                case REQ_GET:
+                    showMsg(data.getStringExtra("rsp") + " download");
+                    break;
+                default:
+                    break;
+            }
+        } else if (resultCode == SFTPService.RSP_CONN_ERR){
+            showMsg("conn: "+data.getStringExtra("rsp"),true);
+        }else if (resultCode == SFTPService.RSP_CMD_ERR){
+            showMsg("cmd: "+data.getStringExtra("rsp"), true);
+        }else {
+            showMsg("unknown error", true);
+        }
         super.onActivityResult(requestCode, resultCode, data);
-        ssh.onResult(requestCode, resultCode, data);
     }
 }

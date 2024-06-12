@@ -6,15 +6,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    tools:context=".ui.activities.FileExplorerActivity">
-
+    tools:context=".ui.activities.FileExplorerActivity"
+    >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+        <TextView
+            android:id="@+id/filesTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dimTextBig"
+            android:padding="10dp"
+            android:text="" />
         <ListView
             android:id="@+id/filesList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            />
+            >
+        </ListView>
+        </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

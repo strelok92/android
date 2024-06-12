@@ -69,9 +69,7 @@ public class DBHelper {
                 }
             }
         }catch (Exception e) {Log.e(TAG, e.toString());};
-
     }
-
     public void addItem(@NonNull Map item){
         servers.add(item);
         updateBase();
@@ -91,9 +89,6 @@ public class DBHelper {
         servers.clear();
         updateBase();
     }
-
-    // fixme add edit item
-
     private void updateBase(){
         XmlSerializer xml;
         FileOutputStream fs;

@@ -3,12 +3,10 @@ package services;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.icu.text.Edits;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpATTRS;
@@ -16,6 +14,8 @@ import com.jcraft.jsch.SftpProgressMonitor;
 import com.jcraft.jsch.UserInfo;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -25,7 +25,9 @@ public class SFTPService extends Service {
     public static final int RSP_CMD_ERR = -2;
     public static final int RSP_CONN_ERR = -1;
     public static final int RSP_OK = 0;
-   
+
+    public static final String ls_separator = "/";
+
     private final String TAG = "TAG SSH EXPLORER";
 
     private JSch jsch;
@@ -61,15 +63,17 @@ public class SFTPService extends Service {
         super.onDestroy();
     }
     private void sendResponse(PendingIntent pi, int code, String msg){
+        if (pi == null) return;
         try{
-            pi.send(this, code, new Intent().putExtra("resp", msg));
+            pi.send(this, code, new Intent().putExtra("rsp", msg));
         }catch (Exception e){
             Log.e(TAG, e.toString());
         }
     }
     private void sendResponse(PendingIntent pi, int code, String[] msg){
+        if (pi == null) return;
         try{
-            pi.send(this, code, new Intent().putExtra("resp", msg));
+            pi.send(this, code, new Intent().putExtra("rsp", msg));
         }catch (Exception e){
             Log.e(TAG, e.toString());
         }
@@ -115,21 +119,12 @@ public class SFTPService extends Service {
             ChannelSftp ch = (ChannelSftp) session.openChannel("sftp");
             if (ch != null){
                 ch.connect(10000);
-//                ch.get(from, new FileOutputStream(to)); // todo add monitor
-                ch.get(from, new FileOutputStream(to), new SftpProgressMonitor() {
-                    @Override public void init(int i, String s, String s1, long l) {
-                        Log.d(TAG, String.format("init(%i, %s, %s, %d)", (int)i, s, s1, (int)l));
-                    }
-                    @Override public boolean count(long l) {
-                        Log.d(TAG, String.format("count(%d)", (int)l));
-                        return false;
-                    }
-                    @Override public void end() { Log.d(TAG, "end()");}
-                });
-                ch.disconnect();
-                Log.d(TAG, "download done");
-                sendResponse(pi, RSP_OK,from);
-                return;
+                if (ch.isConnected()) {
+                    ch.get(from, new FileOutputStream(to)); // todo add monitor
+                    ch.disconnect();
+                    sendResponse(pi, RSP_OK,from);
+                    return;
+                }
             }
         }catch (Exception e){ Log.e(TAG, e.toString()); }
         sendResponse(pi, RSP_CONN_ERR, "download error");
@@ -163,6 +158,7 @@ public class SFTPService extends Service {
 
             if (cmd.equals("cd")) {
                 sftp.cd(path);
+//                sftp.cd(sftp.pwd() + "/" + path);
             }  else if (cmd.equals("mkdir")) {
                 sftp.mkdir(path);
             } else if (cmd.equals("rm")) {
@@ -184,11 +180,10 @@ public class SFTPService extends Service {
                     for (Iterator it = files.iterator();it.hasNext();){
                         ChannelSftp.LsEntry file = (ChannelSftp.LsEntry)it.next();
                         SftpATTRS attr = file.getAttrs();
-                        if (attr.isDir()) {
-                            ls[num++] = "D " + file.getFilename() + " " + attr.toString();
-                        }else{
-                            ls[num++] = "F " + file.getFilename() + " " + attr.toString();
-                        }
+                        ls[num++] = file.getFilename()
+                                + ls_separator + String.format("%d",attr.getSize())
+                                + ls_separator + attr.getPermissionsString()
+                                + ls_separator + attr.getMtimeString();
                     }
                     sendResponse(pi, RSP_OK, ls);
                     return;
@@ -203,11 +198,7 @@ public class SFTPService extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        PendingIntent pi = intent.getParcelableExtra("response");
-
-        // execute command
-        String cmd = intent.getStringExtra("cmd");
-        if (cmd == null) return super.onStartCommand(intent, flags, startId);
+        PendingIntent pi = intent.getParcelableExtra("callback");
 
         executor.execute(()->{
 
@@ -215,6 +206,14 @@ public class SFTPService extends Service {
             if (openSession(pi, intent) == false){
                 return;
             }
+
+            // execute command
+            String cmd = intent.getStringExtra("cmd");
+            if (cmd == null){
+                sendResponse(pi, RSP_OK, "");
+                return;
+            }
+
             // Channels
             if (cmd.equals("get")){
                 download(pi, intent);

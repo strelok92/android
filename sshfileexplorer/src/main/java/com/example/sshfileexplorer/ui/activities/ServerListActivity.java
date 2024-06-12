@@ -21,6 +21,7 @@ import com.example.sshfileexplorer.ui.dialogs.ServerDialog;
 import com.example.sshfileexplorer.ui.dialogs.YesNoDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -198,11 +199,6 @@ public class ServerListActivity extends AppCompatActivity {
             }
             srvListAdapter.notifyDataSetChanged();
     }
-    @Override
-    protected void onDestroy() {
-        stopService(new Intent(this, SSHService.class));
-        super.onDestroy();
-    }
     private void connect(@NonNull String host, @NonNull String port, @NonNull String login, @NonNull String pass){
         Log.d(TAG, String.format("connect to '%s:%s' (%s, %s)", host, port, login, pass));
 
@@ -210,15 +206,11 @@ public class ServerListActivity extends AppCompatActivity {
             Toast.makeText(this, "Password not entry!", Toast.LENGTH_SHORT).show();
             return;
         }
-        Intent ssh = new Intent(this, SSHService.class);
-        ssh.putExtra("host", host);
-        ssh.putExtra("port", Integer.parseInt(port));
-        ssh.putExtra("timeout", 1000);
-        ssh.putExtra("login", login);
-        ssh.putExtra("pass", pass);
-        startService(ssh);
-
-        // Run file explorer activity and connect to remote SSH server
-        startActivity(new Intent(this, FileExplorerActivity.class));
+        Intent explorer = new Intent(this, FileExplorerActivity.class);
+        explorer.putExtra("host", host);
+        explorer.putExtra("port", port);
+        explorer.putExtra("login", login);
+        explorer.putExtra("pass", pass);
+        startActivity(explorer);
     }
 }
