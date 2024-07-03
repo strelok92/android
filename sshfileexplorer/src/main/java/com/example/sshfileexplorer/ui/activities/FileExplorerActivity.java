@@ -2,6 +2,7 @@ package com.example.sshfileexplorer.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -55,7 +56,11 @@ public class FileExplorerActivity extends AppCompatActivity {
             return insets;
         });
 
-        storageDir = getApplicationInfo().dataDir;
+        // Storage dirtectory
+
+        storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
+                + File.separator
+                + getApplicationInfo().loadLabel(getPackageManager()).toString();
 
         // connect to server
 
@@ -72,6 +77,7 @@ public class FileExplorerActivity extends AppCompatActivity {
         // UI init
 
         // Logout button
+
         ImageButton btnExit = findViewById(R.id.btnExit);
         btnExit.setOnClickListener(v -> {
             YesNoDialog dialog = new YesNoDialog();
@@ -87,7 +93,7 @@ public class FileExplorerActivity extends AppCompatActivity {
             dialog.show(getSupportFragmentManager(), "");
         });
 
-        // Init adapter
+        // Download button
 
         listAdapter = new FileListAdapter(this);
         listAdapter.setOnDownloadListener((parent, view, position, id)->{
@@ -98,6 +104,8 @@ public class FileExplorerActivity extends AppCompatActivity {
 
         ListView list = findViewById(R.id.filesList);
         list.setAdapter(listAdapter);
+
+        // Select event
 
         list.setOnItemClickListener((parent, view, position, id)->{
             FileListAdapter.FileItem file = (FileListAdapter.FileItem)listAdapter.getItem(position);
@@ -143,8 +151,20 @@ public class FileExplorerActivity extends AppCompatActivity {
         startService(srvSFTP);
     }
     private void cmdGET(String name){
+
+        // Create storage directory
+
+        File file = new File(storageDir);
+        if (file.exists() == false){
+            if (file.mkdir() == false){
+                showMsg("Error");
+                return;
+            }
+        }
+        String srcDir = ((TextView)findViewById(R.id.filesTitle)).getText().toString();
+
         srvSFTP.putExtra("callback", createPendingResult(REQ_GET, getIntent(), 0));
-        srvSFTP.putExtra("from", name);
+        srvSFTP.putExtra("from", srcDir + File.separator + name);
         srvSFTP.putExtra("to", storageDir + File.separator + name);
         srvSFTP.putExtra("cmd", "get");
         startService(srvSFTP);
@@ -227,7 +247,13 @@ public class FileExplorerActivity extends AppCompatActivity {
                     listAdapter.notifyDataSetChanged();
                     break;
                 case REQ_GET:
-                    showMsg(data.getStringExtra("rsp") + " download");
+                    if (data.getIntExtra("state", -1) == SFTPService.STATE_LOAD){
+                        Log.w(TAG, String.format("load %d", data.getIntExtra("progress", 0) ));
+                    }else if (data.getIntExtra("state", -1) == SFTPService.STATE_CANCEL){
+                        showMsg(data.getStringExtra("rsp") + " cancel");
+                    }else if (data.getIntExtra("state", -1) == SFTPService.STATE_DONE){
+                        showMsg(data.getStringExtra("rsp") + " download");
+                    }
                     break;
                 default:
                     break;

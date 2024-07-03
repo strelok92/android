@@ -3,6 +3,7 @@ package services;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -13,9 +14,6 @@ import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpProgressMonitor;
 import com.jcraft.jsch.UserInfo;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
@@ -25,6 +23,10 @@ public class SFTPService extends Service {
     public static final int RSP_CMD_ERR = -2;
     public static final int RSP_CONN_ERR = -1;
     public static final int RSP_OK = 0;
+
+    public static final int STATE_DONE = 0;
+    public static final int STATE_CANCEL = 1;
+    public static final int STATE_LOAD = 2;
 
     public static final String ls_separator = "/";
 
@@ -111,7 +113,6 @@ public class SFTPService extends Service {
         }
         return false;
     }
-
     private void download(PendingIntent pi, Intent intent){
         String from = intent.getStringExtra("from");
         String to = intent.getStringExtra("to");
@@ -120,8 +121,35 @@ public class SFTPService extends Service {
             if (ch != null){
                 ch.connect(10000);
                 if (ch.isConnected()) {
-                    ch.get(from, new FileOutputStream(to)); // todo add monitor
+
+//                    intent.putExtra("state", STATE_LOAD);
+
+                    DownloadMonitor mon = new DownloadMonitor(pi, intent);
+                    ch.get(from, to, mon);
+
+
+//                    ch.get(from, to, new SftpProgressMonitor() {
+//                        private long fullSize = 0;
+//                        private long loadedSize = 0;
+//                        private int prevPrc = 0;
+//
+//                        private Intent intent_out = intent;
+//                        @Override public void init(int i, String s, String s1, long l) { fullSize = l; }
+//                        @Override public void end() {}
+//                        @Override public boolean count(long l) {
+//                            loadedSize += l;
+//                            int currPrc = (int)(100*loadedSize/fullSize);
+//                            if (((currPrc % 1) == 0) && (currPrc != prevPrc)){
+//                                prevPrc = currPrc;
+////                                intent.putExtra("progress", 14);
+//                                new Intent().putExtra("progress", 14);
+//                                sendResponse(pi, RSP_OK,from);
+//                            }
+//                            return true;
+//                        }
+//                    });
                     ch.disconnect();
+                    intent.putExtra("state", STATE_DONE);
                     sendResponse(pi, RSP_OK,from);
                     return;
                 }
@@ -129,6 +157,40 @@ public class SFTPService extends Service {
         }catch (Exception e){ Log.e(TAG, e.toString()); }
         sendResponse(pi, RSP_CONN_ERR, "download error");
     }
+    
+    private class DownloadMonitor implements  SftpProgressMonitor{
+        private long fullSize = 0;
+        private long loadedSize = 0;
+        private int prevPrc = 0;
+
+        private Intent intent;
+        private PendingIntent pi;
+        private boolean isCanceled;
+        DownloadMonitor(PendingIntent pendi,Intent in){
+            intent = in;
+            pi=pendi;
+            isCanceled = false;
+        }
+        @Override public void init(int i, String s, String s1, long l) { fullSize = l; }
+        @Override public void end() {
+
+        }
+        @Override public boolean count(long l) {
+            loadedSize += l;
+            int currPrc = (int)(100*loadedSize/fullSize);
+            if (((currPrc % 1) == 0) && (currPrc != prevPrc)){
+                prevPrc = currPrc;
+//                intent.putExtra("state", STATE_LOAD);
+//                intent.putExtra("progress", 14);
+
+                Intent i = new Intent();
+                i.putExtra("state", STATE_LOAD);
+                sendResponse(pi, RSP_OK,"file");
+            }
+            return (isCanceled == false);
+        }
+    }
+    
     private void explorer(String cmd, PendingIntent pi, Intent intent){
 
         // Channel open
